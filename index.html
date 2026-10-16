@@ -274,7 +274,7 @@
 
         <div class="grid grid-cols-2 gap-2 border-t border-zinc-800 pt-2">
           <div>
-            <label class="block font-semibold text-zinc-400 mb-1">Monto Préstamo ($) *</label>
+            <label class="block font-semibold text-zinc-400 mb-1">Capital / Prestar ($) *</label>
             <input type="number" id="cliMonto" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
           </div>
           <div>
@@ -355,8 +355,8 @@
   <!-- SCRIPT LOGICA Y PERSISTENCIA -->
   <script>
     // --- ESTADO Y CLAVES DE ALMACENAMIENTO ---
-    const STORAGE_KEY_DATA = 'jm_finans_db_v3';
-    const STORAGE_KEY_USERS = 'jm_finans_users_v3';
+    const STORAGE_KEY_DATA = 'jm_finans_db_v4';
+    const STORAGE_KEY_USERS = 'jm_finans_users_v4';
 
     let usuarioActual = null;
 
@@ -454,13 +454,13 @@
       const telefono = document.getElementById('cliTelefono').value.trim();
       const barrio = document.getElementById('cliBarrio').value.trim();
       const direccion = document.getElementById('cliDireccion').value.trim();
-      const monto = parseFloat(document.getElementById('cliMonto').value);
+      const montoCapital = parseFloat(document.getElementById('cliMonto').value);
       const interes = parseFloat(document.getElementById('cliInteres').value);
       const tiempoVal = document.getElementById('cliTiempoVal').value;
       const tiempoUnidad = document.getElementById('cliTiempoUnidad').value;
       const fechaCobro = document.getElementById('cliFechaCobro').value;
 
-      const totalConInteres = monto + (monto * (interes / 100));
+      const totalConInteres = montoCapital + (montoCapital * (interes / 100));
 
       const nuevo = {
         id: Date.now().toString(),
@@ -469,7 +469,9 @@
         telefono,
         barrio: barrio || 'N/A',
         direccion: direccion || 'N/A',
+        capital: montoCapital,
         montoTotal: totalConInteres,
+        totalAbonado: 0,
         saldoPendiente: totalConInteres,
         tiempo: `${tiempoVal} ${tiempoUnidad}`,
         fechaCobro,
@@ -511,7 +513,7 @@
           </td>
           <td class="p-3 font-semibold text-zinc-200">
             <div>$${cli.montoTotal.toLocaleString()}</div>
-            <div class="text-[10px] text-zinc-400">Plazo: ${cli.tiempo || 'N/A'}</div>
+            <div class="text-[10px] text-zinc-400">Cap: $${(cli.capital || 0).toLocaleString()} | Plazo: ${cli.tiempo || 'N/A'}</div>
           </td>
           <td class="p-3 font-bold ${cli.saldoPendiente > 0 ? 'text-amber-400' : 'text-green-400'}">$${cli.saldoPendiente.toLocaleString()}</td>
           <td class="p-3 text-zinc-300">${cli.fechaCobro || 'N/A'}</td>
@@ -587,6 +589,7 @@
       if (!cli || isNaN(monto)) return;
 
       cli.saldoPendiente -= monto;
+      cli.totalAbonado = (cli.totalAbonado || 0) + monto;
       if (nuevaFecha) cli.fechaCobro = nuevaFecha;
 
       cli.historialPagos.push({
@@ -607,31 +610,29 @@
 
       // Abrir recibo WhatsApp opcional
       if (confirm("¿Deseas enviar el recibo de pago por WhatsApp al cliente?")) {
-        enviarReciboWhatsApp(cli.id, monto, metodo);
+        enviarReciboWhatsApp(cli.id);
       }
     }
 
-    function enviarReciboWhatsApp(id, ultimoMonto = 0, metodo = 'Efectivo') {
+    // --- FORMATEO RECIBO WHATSAPP PERSONALIZADO ---
+    function enviarReciboWhatsApp(id) {
       const cli = clientes.find(c => c.id === id);
       if (!cli) return;
 
-      let msg = `*JM FINANS - COMPROBANTE DE PAGO*\n`;
-      msg += `-----------------------------------\n`;
-      msg += `Cliente: *${cli.nombre}*\n`;
-      if (cli.tiempo) {
-        msg += `Plazo Acordado: *${cli.tiempo}*\n`;
-      }
-      if (ultimoMonto > 0) {
-        msg += `Abono Recibido: *$${ultimoMonto.toLocaleString()}*\n`;
-        msg += `Método de Pago: *${metodo}*\n`;
-      }
-      msg += `Saldo Pendiente: *$${cli.saldoPendiente.toLocaleString()}*\n`;
-      msg += `Estado del Crédito: *${cli.estado}*\n`;
-      if (cli.saldoPendiente > 0 && cli.fechaCobro) {
-        msg += `Próxima fecha de cobro: *${cli.fechaCobro}*\n`;
-      }
-      msg += `-----------------------------------\n`;
-      msg += `¡Gracias por su preferencia!`;
+      const ref = 'JM-' + cli.id.slice(-6);
+      const capital = cli.capital ? cli.capital.toLocaleString() : '0';
+      const totalCredito = cli.montoTotal ? cli.montoTotal.toLocaleString() : '0';
+      const totalAbonado = cli.totalAbonado ? cli.totalAbonado.toLocaleString() : '0';
+      const saldoPendiente = cli.saldoPendiente ? cli.saldoPendiente.toLocaleString() : '0';
+
+      let msg = `JM FINANS - RECIBO DE PAGO\n\n`;
+      msg += `Ref: ${ref}\n`;
+      msg += `Cliente: ${cli.nombre}\n`;
+      msg += `Capital: $${capital}\n`;
+      msg += `Total Crédito: $${totalCredito}\n`;
+      msg += `Total Abonado: $${totalAbonado}\n`;
+      msg += `Saldo Pendiente: $${saldoPendiente}\n\n`;
+      msg += `JM FINANS - Financiación Confidencial`;
 
       const telLimpio = cli.telefono.replace(/\D/g, '');
       const url = `https://wa.me/57${telLimpio}?text=${encodeURIComponent(msg)}`;

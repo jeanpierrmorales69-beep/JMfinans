@@ -12,11 +12,6 @@
   <meta property="og:image" content="https://jeanpierrmorales69-beep.github.io/JMfinans/logo.png" />
   <meta property="og:url" content="https://jeanpierrmorales69-beep.github.io/JMfinans/" />
 
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="JM FINANS | Soluciones Financieras" />
-  <meta name="twitter:description" content="Plataforma de gestión financiera y control de préstamos." />
-  <meta name="twitter:image" content="https://jeanpierrmorales69-beep.github.io/JMfinans/logo.png" />
-
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -39,6 +34,23 @@
   </script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* Estilo de animación flotante / movimiento suave para el Logo */
+    @keyframes logoFloat {
+      0%, 100% {
+        transform: translateY(0px) scale(1);
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+      }
+      50% {
+        transform: translateY(-6px) scale(1.04);
+        filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4));
+      }
+    }
+    .animated-logo {
+      animation: logoFloat 3.5s ease-in-out infinite;
+    }
+  </style>
 </head>
 <body class="h-full bg-black text-gray-200 antialiased font-sans">
 
@@ -49,7 +61,7 @@
     <div id="loginView" class="flex-1 flex items-center justify-center p-4">
       <div class="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl text-center">
         <div class="mb-6">
-          <div class="w-20 h-20 mx-auto mb-3 bg-zinc-800 border border-zinc-700 rounded-2xl flex items-center justify-center shadow-inner overflow-hidden">
+          <div class="w-24 h-24 mx-auto mb-4 bg-zinc-800 border border-zinc-700 rounded-2xl flex items-center justify-center shadow-inner overflow-hidden animated-logo">
             <img src="logo.png" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-2xl font-bold text-silver-300\'>JM</span>'" alt="JM FINANS" class="w-full h-full object-cover">
           </div>
           <h1 class="text-2xl font-extrabold tracking-wider text-white">JM FINANS</h1>
@@ -81,7 +93,7 @@
       <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 bg-zinc-800 border border-zinc-700 rounded-lg flex items-center justify-center font-bold text-silver-300 overflow-hidden">
+            <div class="w-10 h-10 bg-zinc-800 border border-zinc-700 rounded-lg flex items-center justify-center font-bold text-silver-300 overflow-hidden animated-logo">
               <img src="logo.png" onerror="this.onerror=null; this.parentElement.innerText='JM'" class="w-full h-full object-cover">
             </div>
             <div>
@@ -121,9 +133,9 @@
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h2 class="text-xl font-bold text-white">Listado de Clientes</h2>
-              <p class="text-xs text-zinc-400">Control de créditos, alertas de cobro y registros</p>
+              <p class="text-xs text-zinc-400">Control dinámico de créditos y alertas de cobro</p>
             </div>
-            <button onclick="abrirModalNuevoCliente()" class="px-4 py-2.5 bg-white text-black font-semibold text-xs rounded-xl hover:bg-zinc-200 transition flex items-center gap-2">
+            <button onclick="abrirModalNuevoCliente()" class="px-4 py-2.5 bg-white text-black font-semibold text-xs rounded-xl hover:bg-zinc-200 transition flex items-center gap-2 shadow-lg">
               <i data-lucide="user-plus" class="w-4 h-4"></i> Nuevo Cliente
             </button>
           </div>
@@ -144,7 +156,7 @@
                   <tr>
                     <th class="p-3">Cliente</th>
                     <th class="p-3">Ubicación</th>
-                    <th class="p-3">Monto & Plazo</th>
+                    <th class="p-3">Monto & Plazo (Días)</th>
                     <th class="p-3">Saldo Pendiente</th>
                     <th class="p-3">Próximo Cobro</th>
                     <th class="p-3">Estado</th>
@@ -161,7 +173,7 @@
 
         <!-- SECCIÓN 2: SIMULADOR -->
         <section id="secSimulador" class="hidden space-y-6">
-          <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 max-w-2xl mx-auto space-y-4">
+          <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 max-w-2xl mx-auto space-y-4 shadow-xl">
             <h2 class="text-lg font-bold text-white flex items-center gap-2">
               <i data-lucide="calculator" class="w-5 h-5 text-zinc-400"></i> Simulador de Préstamos
             </h2>
@@ -175,23 +187,8 @@
                 <input type="number" id="simInteres" value="20" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
               </div>
               <div>
-                <label class="block text-xs font-semibold text-zinc-400 mb-1">Plazo / Tiempo</label>
-                <div class="flex gap-2">
-                  <input type="number" id="simTiempoVal" value="30" class="w-2/3 p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
-                  <select id="simTiempoUnidad" class="w-1/3 p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
-                    <option value="Días">Días</option>
-                    <option value="Meses">Meses</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-zinc-400 mb-1">Frecuencia de Pago</label>
-                <select id="simFrecuencia" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
-                  <option value="Diario">Diario</option>
-                  <option value="Semanal">Semanal</option>
-                  <option value="Quincenal">Quincenal</option>
-                  <option value="Mensual">Mensual</option>
-                </select>
+                <label class="block text-xs font-semibold text-zinc-400 mb-1">Plazo en Días</label>
+                <input type="number" id="simDias" value="30" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
               </div>
             </div>
             <button onclick="calcularSimulacion()" class="w-full py-2.5 bg-zinc-200 hover:bg-white text-black font-bold rounded-lg text-xs transition">
@@ -200,35 +197,42 @@
 
             <div id="simResultado" class="hidden pt-4 border-t border-zinc-800 space-y-2 text-xs">
               <div class="flex justify-between text-zinc-400"><span>Monto Total con Interés:</span> <strong id="resTotal" class="text-white"></strong></div>
-              <div class="flex justify-between text-zinc-400"><span>Estimado por Cuota:</span> <strong id="resValorCuota" class="text-green-400 text-sm"></strong></div>
+              <div class="flex justify-between text-zinc-400"><span>Estimado Diario:</span> <strong id="resValorCuota" class="text-green-400 text-sm"></strong></div>
             </div>
           </div>
         </section>
 
         <!-- SECCIÓN 3: CONFIGURACIÓN (Solo Admin) -->
         <section id="secConfiguracion" class="hidden space-y-6 max-w-2xl mx-auto">
-          <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4">
+          <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4 shadow-xl">
             <h2 class="text-lg font-bold text-white flex items-center gap-2">
-              <i data-lucide="user-cog" class="w-5 h-5 text-zinc-400"></i> Gestión de Usuarios del Sistema
+              <i data-lucide="user-cog" class="w-5 h-5 text-zinc-400"></i> Gestión de Usuarios y Personal
             </h2>
             <form onsubmit="event.preventDefault(); crearNuevoUsuario();" class="space-y-3">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label class="block text-xs font-semibold text-zinc-400 mb-1">Nombre Usuario</label>
-                  <input type="text" id="nuevoUsuNombre" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+                  <label class="block text-xs font-semibold text-zinc-400 mb-1">Usuario</label>
+                  <input type="text" id="nuevoUsuNombre" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white" placeholder="Ej. Carlos">
                 </div>
                 <div>
                   <label class="block text-xs font-semibold text-zinc-400 mb-1">Contraseña</label>
-                  <input type="password" id="nuevoUsuPass" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+                  <input type="password" id="nuevoUsuPass" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white" placeholder="••••">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-zinc-400 mb-1">Rol / Tipo</label>
+                  <select id="nuevoUsuRol" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+                    <option value="operador">Empleado / Operador</option>
+                    <option value="admin">Administrador</option>
+                  </select>
                 </div>
               </div>
-              <button type="submit" class="w-full py-2 bg-zinc-200 hover:bg-white text-black font-bold text-xs rounded-lg transition">
-                Crear Usuario Acceso
+              <button type="submit" class="w-full py-2.5 bg-zinc-200 hover:bg-white text-black font-bold text-xs rounded-lg transition">
+                Crear Nuevo Acceso
               </button>
             </form>
 
             <div class="pt-4 border-t border-zinc-800">
-              <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Usuarios Registrados</h3>
+              <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Personal Autorizado</h3>
               <ul id="listaUsuariosAdmin" class="space-y-2 text-xs"></ul>
             </div>
           </div>
@@ -240,7 +244,7 @@
 
   <!-- MODAL: NUEVO CLIENTE -->
   <div id="modalCliente" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
       <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
         <h3 class="font-bold text-white text-base">Registrar Nuevo Cliente</h3>
         <button onclick="cerrarModalNuevoCliente()" class="text-zinc-500 hover:text-white">&times;</button>
@@ -283,19 +287,9 @@
           </div>
         </div>
 
-        <!-- Tiempo y Plazo -->
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block font-semibold text-zinc-400 mb-1">Tiempo / Duración *</label>
-            <input type="number" id="cliTiempoVal" value="30" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
-          </div>
-          <div>
-            <label class="block font-semibold text-zinc-400 mb-1">Unidad de Tiempo *</label>
-            <select id="cliTiempoUnidad" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
-              <option value="Días">Días</option>
-              <option value="Meses">Meses</option>
-            </select>
-          </div>
+        <div>
+          <label class="block font-semibold text-zinc-400 mb-1">Plazo en Días *</label>
+          <input type="number" id="cliDias" value="30" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
         </div>
 
         <div>
@@ -313,7 +307,7 @@
 
   <!-- MODAL: REGISTRAR PAGO -->
   <div id="modalPago" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-sm w-full p-6 space-y-4">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
         <h3 class="font-bold text-white text-sm">Registrar Pago / Abono</h3>
         <button onclick="cerrarModalPago()" class="text-zinc-500 hover:text-white">&times;</button>
@@ -355,8 +349,8 @@
   <!-- SCRIPT LOGICA Y PERSISTENCIA -->
   <script>
     // --- ESTADO Y CLAVES DE ALMACENAMIENTO ---
-    const STORAGE_KEY_DATA = 'jm_finans_db_v4';
-    const STORAGE_KEY_USERS = 'jm_finans_users_v4';
+    const STORAGE_KEY_DATA = 'jm_finans_db_v6';
+    const STORAGE_KEY_USERS = 'jm_finans_users_v6';
 
     let usuarioActual = null;
 
@@ -372,6 +366,12 @@
     function persistirTodo() {
       localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(clientes));
       localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(usuarios));
+    }
+
+    // Formatear números estilo punto ($ 200.000)
+    function formatearDinero(valor) {
+      if (isNaN(valor) || valor === null) return '0';
+      return valor.toLocaleString('es-CO');
     }
 
     // Inicializar iconos
@@ -393,7 +393,7 @@
         err.classList.add('hidden');
         document.getElementById('loginView').classList.add('hidden');
         document.getElementById('dashboardView').classList.remove('hidden');
-        document.getElementById('userRoleBadge').innerText = encontrado.role === 'admin' ? 'Administrador' : 'Operador';
+        document.getElementById('userRoleBadge').innerText = encontrado.role === 'admin' ? 'Administrador' : 'Empleado';
         
         if (encontrado.role === 'admin') {
           document.getElementById('configNavBtn').classList.remove('hidden');
@@ -456,8 +456,7 @@
       const direccion = document.getElementById('cliDireccion').value.trim();
       const montoCapital = parseFloat(document.getElementById('cliMonto').value);
       const interes = parseFloat(document.getElementById('cliInteres').value);
-      const tiempoVal = document.getElementById('cliTiempoVal').value;
-      const tiempoUnidad = document.getElementById('cliTiempoUnidad').value;
+      const diasVal = document.getElementById('cliDias').value;
       const fechaCobro = document.getElementById('cliFechaCobro').value;
 
       const totalConInteres = montoCapital + (montoCapital * (interes / 100));
@@ -473,7 +472,7 @@
         montoTotal: totalConInteres,
         totalAbonado: 0,
         saldoPendiente: totalConInteres,
-        tiempo: `${tiempoVal} ${tiempoUnidad}`,
+        dias: `${diasVal} Días`,
         fechaCobro,
         estado: 'ACTIVO',
         historialPagos: []
@@ -512,22 +511,25 @@
             <div class="text-[10px] text-zinc-500">${cli.direccion}</div>
           </td>
           <td class="p-3 font-semibold text-zinc-200">
-            <div>$${cli.montoTotal.toLocaleString()}</div>
-            <div class="text-[10px] text-zinc-400">Cap: $${(cli.capital || 0).toLocaleString()} | Plazo: ${cli.tiempo || 'N/A'}</div>
+            <div>$ ${formatearDinero(cli.montoTotal)}</div>
+            <div class="text-[10px] text-zinc-400">Plazo: ${cli.dias || '30 Días'}</div>
           </td>
-          <td class="p-3 font-bold ${cli.saldoPendiente > 0 ? 'text-amber-400' : 'text-green-400'}">$${cli.saldoPendiente.toLocaleString()}</td>
+          <td class="p-3 font-bold ${cli.saldoPendiente > 0 ? 'text-amber-400' : 'text-green-400'}">$ ${formatearDinero(cli.saldoPendiente)}</td>
           <td class="p-3 text-zinc-300">${cli.fechaCobro || 'N/A'}</td>
           <td class="p-3">
             <span class="px-2 py-0.5 text-[10px] rounded-md font-bold border ${badgeColor}">${cli.estado}</span>
           </td>
           <td class="p-3 text-right space-x-1">
             ${cli.saldoPendiente > 0 ? `
-              <button onclick="abrirModalPago('${cli.id}')" class="px-2.5 py-1 bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-700/50 rounded-md font-semibold text-[11px]">
+              <button onclick="abrirModalPago('${cli.id}')" class="px-2 py-1 bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-700/50 rounded-md font-semibold text-[11px]">
                 + Abono
               </button>
             ` : ''}
-            <button onclick="enviarReciboWhatsApp('${cli.id}')" class="px-2.5 py-1 bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-800 rounded-md text-[11px]" title="Enviar Recibo WhatsApp">
-              📲 Recibo
+            <button onclick="enviarReciboWhatsApp('${cli.id}')" class="px-2 py-1 bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-800 rounded-md text-[11px]" title="WhatsApp">
+              📲 WA
+            </button>
+            <button onclick="descargarReciboPDF('${cli.id}')" class="px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-md text-[11px]" title="Generar PDF">
+              📄 PDF
             </button>
           </td>
         `;
@@ -550,7 +552,7 @@
           if (cli.fechaCobro <= hoy) {
             contadorAlertas++;
             const li = document.createElement('li');
-            li.innerHTML = `<strong>${cli.nombre}</strong> - Cobro programado para hoy o vencido (${cli.fechaCobro}). Saldo: $${cli.saldoPendiente.toLocaleString()}`;
+            li.innerHTML = `<strong>${cli.nombre}</strong> - Cobro programado para hoy o vencido (${cli.fechaCobro}). Saldo: $ ${formatearDinero(cli.saldoPendiente)}`;
             lista.appendChild(li);
           }
         }
@@ -570,7 +572,7 @@
 
       document.getElementById('pagoClienteId').value = cli.id;
       document.getElementById('pagoClienteNombre').innerText = cli.nombre;
-      document.getElementById('pagoSaldoPendiente').innerText = '$' + cli.saldoPendiente.toLocaleString();
+      document.getElementById('pagoSaldoPendiente').innerText = '$ ' + formatearDinero(cli.saldoPendiente);
       document.getElementById('pagoMonto').value = '';
       document.getElementById('modalPago').classList.remove('hidden');
     }
@@ -608,50 +610,108 @@
       renderTablaClientes();
       verificarAlertas();
 
-      // Abrir recibo WhatsApp opcional
-      if (confirm("¿Deseas enviar el recibo de pago por WhatsApp al cliente?")) {
+      if (confirm("¿Deseas enviar el recibo por WhatsApp al cliente?")) {
         enviarReciboWhatsApp(cli.id);
       }
     }
 
-    // --- FORMATEO RECIBO WHATSAPP PERSONALIZADO ---
+    // --- FORMATO DE RECIBO WHATSAPP EXACTO (ESTILO IMAGEN) ---
     function enviarReciboWhatsApp(id) {
       const cli = clientes.find(c => c.id === id);
       if (!cli) return;
 
-      const ref = 'JM-' + cli.id.slice(-6);
-      const capital = cli.capital ? cli.capital.toLocaleString() : '0';
-      const totalCredito = cli.montoTotal ? cli.montoTotal.toLocaleString() : '0';
-      const totalAbonado = cli.totalAbonado ? cli.totalAbonado.toLocaleString() : '0';
-      const saldoPendiente = cli.saldoPendiente ? cli.saldoPendiente.toLocaleString() : '0';
+      const ref = 'JMF-' + cli.id.slice(-3);
+      const capital = cli.capital ? formatearDinero(cli.capital) : '0';
+      const totalCredito = cli.montoTotal ? formatearDinero(cli.montoTotal) : '0';
+      const totalAbonado = cli.totalAbonado ? formatearDinero(cli.totalAbonado) : '0';
+      const saldoPendiente = cli.saldoPendiente ? formatearDinero(cli.saldoPendiente) : '0';
 
-      let msg = `JM FINANS - RECIBO DE PAGO\n\n`;
-      msg += `Ref: ${ref}\n`;
-      msg += `Cliente: ${cli.nombre}\n`;
-      msg += `Capital: $${capital}\n`;
-      msg += `Total Crédito: $${totalCredito}\n`;
-      msg += `Total Abonado: $${totalAbonado}\n`;
-      msg += `Saldo Pendiente: $${saldoPendiente}\n\n`;
-      msg += `JM FINANS - Financiación Confidencial`;
+      // Formato exacto con negritas (*) e itálicas (_) de WhatsApp
+      let msg = `*JM FINANS - RECIBO DE PAGO*\n\n`;
+      msg += `*Ref:* ${ref}\n`;
+      msg += `*Cliente:* ${cli.nombre}\n`;
+      msg += `*Capital:* $ ${capital}\n`;
+      msg += `*Total Crédito:* $ ${totalCredito}\n`;
+      msg += `*Total Abonado:* $ ${totalAbonado}\n`;
+      msg += `*Saldo Pendiente:* $ ${saldoPendiente}\n\n`;
+      msg += `_*JM FINANS - Financiación Confidencial*_`;
 
       const telLimpio = cli.telefono.replace(/\D/g, '');
       const url = `https://wa.me/57${telLimpio}?text=${encodeURIComponent(msg)}`;
       window.open(url, '_blank');
     }
 
+    // --- RECIBO PDF DINÁMICO ---
+    function descargarReciboPDF(id) {
+      const cli = clientes.find(c => c.id === id);
+      if (!cli) return;
+
+      const ref = 'JMF-' + cli.id.slice(-3);
+      const capital = cli.capital ? formatearDinero(cli.capital) : '0';
+      const totalCredito = cli.montoTotal ? formatearDinero(cli.montoTotal) : '0';
+      const totalAbonado = cli.totalAbonado ? formatearDinero(cli.totalAbonado) : '0';
+      const saldoPendiente = cli.saldoPendiente ? formatearDinero(cli.saldoPendiente) : '0';
+
+      const ventanaPDF = window.open('', '_blank');
+      ventanaPDF.document.write(`
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+          <meta charset="UTF-8">
+          <title>Recibo ${ref} - JM FINANS</title>
+          <style>
+            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #fff; color: #111; padding: 40px; }
+            .ticket { max-width: 400px; margin: 0 auto; border: 2px solid #111; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+            .header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 15px; margin-bottom: 20px; }
+            .header h1 { margin: 0; font-size: 20px; letter-spacing: 2px; }
+            .header p { margin: 5px 0 0; font-size: 11px; color: #666; }
+            .details { font-size: 14px; line-height: 1.8; }
+            .row { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 6px 0; }
+            .row strong { color: #111; font-weight: 700; }
+            .footer { text-align: center; margin-top: 25px; border-top: 2px dashed #333; padding-top: 15px; font-size: 12px; font-style: italic; color: #333; }
+            @media print { body { padding: 0; } .no-print { display: none; } }
+          </style>
+        </head>
+        <body onload="window.print()">
+          <div class="ticket">
+            <div class="header">
+              <h1>JM FINANS</h1>
+              <p>RECIBO DE PAGO OFICIAL</p>
+            </div>
+            <div class="details">
+              <div class="row"><span>Ref:</span> <strong>${ref}</strong></div>
+              <div class="row"><span>Cliente:</span> <strong>${cli.nombre}</strong></div>
+              <div class="row"><span>Capital:</span> <strong>$ ${capital}</strong></div>
+              <div class="row"><span>Total Crédito:</span> <strong>$ ${totalCredito}</strong></div>
+              <div class="row"><span>Total Abonado:</span> <strong>$ ${totalAbonado}</strong></div>
+              <div class="row" style="font-size: 16px; border-top: 2px solid #111; margin-top: 10px; padding-top: 10px;">
+                <span>Saldo Pendiente:</span> <strong style="color: #b91c1c;">$ ${saldoPendiente}</strong>
+              </div>
+            </div>
+            <div class="footer">
+              <p>JM FINANS - Financiación Confidencial</p>
+              <button class="no-print" onclick="window.print()" style="margin-top:15px; padding:10px 20px; background:#111; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold;">Imprimir / Guardar PDF</button>
+            </div>
+          </div>
+        </body>
+        </html>
+      `);
+      ventanaPDF.document.close();
+    }
+
     // --- SIMULADOR ---
     function calcularSimulacion() {
       const m = parseFloat(document.getElementById('simMonto').value);
       const i = parseFloat(document.getElementById('simInteres').value);
-      const tVal = parseFloat(document.getElementById('simTiempoVal').value);
+      const dias = parseFloat(document.getElementById('simDias').value);
 
-      if (isNaN(m) || isNaN(i) || isNaN(tVal) || tVal <= 0) return;
+      if (isNaN(m) || isNaN(i) || isNaN(dias) || dias <= 0) return;
 
       const total = m + (m * (i / 100));
-      const estimadoCuota = total / tVal;
+      const estimadoDiario = total / dias;
 
-      document.getElementById('resTotal').innerText = '$' + total.toLocaleString();
-      document.getElementById('resValorCuota').innerText = '$' + estimadoCuota.toLocaleString('es-CO', { maximumFractionDigits: 0 });
+      document.getElementById('resTotal').innerText = '$ ' + formatearDinero(total);
+      document.getElementById('resValorCuota').innerText = '$ ' + formatearDinero(Math.round(estimadoDiario));
       document.getElementById('simResultado').classList.remove('hidden');
     }
 
@@ -659,13 +719,14 @@
     function crearNuevoUsuario() {
       const u = document.getElementById('nuevoUsuNombre').value.trim();
       const p = document.getElementById('nuevoUsuPass').value.trim();
+      const r = document.getElementById('nuevoUsuRol').value;
 
       if (!u || !p) return;
 
-      usuarios.push({ user: u, pass: p, role: 'operador' });
+      usuarios.push({ user: u, pass: p, role: r });
       persistirTodo();
       renderListaUsuariosAdmin();
-      alert(`Usuario ${u} creado con éxito.`);
+      alert(`Acceso creado para ${u} como ${r === 'admin' ? 'Administrador' : 'Empleado'}.`);
       document.getElementById('nuevoUsuNombre').value = '';
       document.getElementById('nuevoUsuPass').value = '';
     }
@@ -680,10 +741,10 @@
         li.innerHTML = `
           <div>
             <span class="font-bold text-white">${u.user}</span> 
-            <span class="text-[10px] text-zinc-500">(${u.role})</span>
-            <div class="text-[10px] text-zinc-400">Contraseña: ••••••••</div>
+            <span class="text-[10px] px-1.5 py-0.5 rounded ${u.role === 'admin' ? 'bg-zinc-800 text-white' : 'bg-zinc-900 text-zinc-400'}">${u.role.toUpperCase()}</span>
+            <div class="text-[10px] text-zinc-500">Contraseña: ••••••••</div>
           </div>
-          ${u.role !== 'admin' ? `
+          ${u.user.toLowerCase() !== 'jean' ? `
             <button onclick="eliminarUsuario(${index})" class="text-red-400 hover:text-red-300 text-xs">Eliminar</button>
           ` : '<span class="text-[10px] text-zinc-500">Principal</span>'}
         `;
@@ -692,7 +753,7 @@
     }
 
     function eliminarUsuario(idx) {
-      if (confirm("¿Estás seguro de eliminar este usuario?")) {
+      if (confirm("¿Estás seguro de eliminar este acceso?")) {
         usuarios.splice(idx, 1);
         persistirTodo();
         renderListaUsuariosAdmin();

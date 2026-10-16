@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-black text-gray-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JM FINANS | Sistema Integral de Gestión & Créditos</title>
+  
+  <!-- Vista previa al compartir enlace (WhatsApp y Redes Sociales) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="JM FINANS | Soluciones Financieras & Préstamos" />
+  <meta property="og:description" content="Plataforma de gestión de préstamos, simulador de cuotas y control de clientes de JM FINANS." />
+  <meta property="og:image" content="https://jeanpierrmorales69-beep.github.io/jmfinans/logo.png" />
+  <meta property="og:url" content="https://jeanpierrmorales69-beep.github.io/jmfinans/" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="JM FINANS | Soluciones Financieras" />
+  <meta name="twitter:description" content="Plataforma de gestión financiera y control de préstamos." />
+  <meta name="twitter:image" content="https://jeanpierrmorales69-beep.github.io/jmfinans/logo.png" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            silver: {
+              100: '#f5f5f7',
+              200: '#e5e5ea',
+              300: '#d1d1d6',
+              400: '#9a9a9e',
+              500: '#8e8e93',
+              600: '#636366',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="h-full bg-black text-gray-200 antialiased font-sans">
+
+  <!-- Contenedor Principal -->
+  <div id="app" class="min-h-screen flex flex-col">
+
+    <!-- PANTALLA DE LOGIN -->
+    <div id="loginView" class="flex-1 flex items-center justify-center p-4">
+      <div class="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl text-center">
+        <div class="mb-6">
+          <div class="w-20 h-20 mx-auto mb-3 bg-zinc-800 border border-zinc-700 rounded-2xl flex items-center justify-center shadow-inner overflow-hidden">
+            <img src="logo.png" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-2xl font-bold text-silver-300\'>JM</span>'" alt="JM FINANS" class="w-full h-full object-cover">
+          </div>
+          <h1 class="text-2xl font-extrabold tracking-wider text-white">JM FINANS</h1>
+          <p class="text-xs text-zinc-400 mt-1">Gestión Privada de Préstamos</p>
+        </div>
+
+        <form id="loginForm" class="space-y-4 text-left" onsubmit="event.preventDefault(); iniciarSesion();">
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">Usuario</label>
+            <input type="text" id="loginUser" required class="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition" placeholder="Ingrese su usuario">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">Contraseña</label>
+            <input type="password" id="loginPass" required class="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition" placeholder="••••••••">
+          </div>
+          <div id="loginError" class="hidden text-red-400 text-xs text-center font-medium">
+            Usuario o contraseña incorrectos.
+          </div>
+          <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-zinc-200 via-zinc-400 to-zinc-300 text-black font-bold rounded-xl hover:opacity-90 transition shadow-lg">
+            Ingresar al Sistema
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- PANEL PRINCIPAL (DASHBOARD) -->
+    <div id="dashboardView" class="hidden flex-1 flex flex-col">
+      <!-- Navbar -->
+      <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-zinc-800 border border-zinc-700 rounded-lg flex items-center justify-center font-bold text-silver-300 overflow-hidden">
+              <img src="logo.png" onerror="this.onerror=null; this.parentElement.innerText='JM'" class="w-full h-full object-cover">
+            </div>
+            <div>
+              <span class="font-extrabold text-white tracking-wide block leading-tight">JM FINANS</span>
+              <span id="userRoleBadge" class="text-[10px] text-zinc-400 uppercase tracking-widest font-semibold"></span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <button id="configNavBtn" onclick="verSeccion('configuracion')" class="hidden px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-200 rounded-lg border border-zinc-700 flex items-center gap-1.5 transition">
+              <i data-lucide="settings" class="w-4 h-4"></i> Configuración
+            </button>
+            <button onclick="cerrarSesion()" class="px-3 py-1.5 bg-red-950/60 hover:bg-red-900/80 text-red-200 text-xs rounded-lg border border-red-800/50 flex items-center gap-1.5 transition">
+              <i data-lucide="log-out" class="w-4 h-4"></i> Salir
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Container -->
+      <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        
+        <!-- Navegación por pestañas -->
+        <div class="flex border-b border-zinc-800 gap-2 overflow-x-auto pb-1">
+          <button id="tabClientes" onclick="verSeccion('clientes')" class="px-4 py-2 text-sm font-semibold border-b-2 border-white text-white flex items-center gap-2 whitespace-nowrap">
+            <i data-lucide="users" class="w-4 h-4"></i> Clientes & Cobros
+          </button>
+          <button id="tabSimulador" onclick="verSeccion('simulador')" class="px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap">
+            <i data-lucide="calculator" class="w-4 h-4"></i> Simulador
+          </button>
+          <button id="tabConfig" onclick="verSeccion('configuracion')" class="hidden px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap">
+            <i data-lucide="shield" class="w-4 h-4"></i> Usuarios (Admin)
+          </button>
+        </div>
+
+        <!-- SECCIÓN 1: CLIENTES -->
+        <section id="secClientes" class="space-y-6">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h2 class="text-xl font-bold text-white">Listado de Clientes</h2>
+              <p class="text-xs text-zinc-400">Control de créditos, alertas de cobro y registros</p>
+            </div>
+            <button onclick="abrirModalNuevoCliente()" class="px-4 py-2.5 bg-white text-black font-semibold text-xs rounded-xl hover:bg-zinc-200 transition flex items-center gap-2">
+              <i data-lucide="user-plus" class="w-4 h-4"></i> Nuevo Cliente
+            </button>
+          </div>
+
+          <!-- Alertas Rápidas -->
+          <div id="alertasContainer" class="hidden p-4 bg-amber-950/30 border border-amber-800/50 rounded-xl text-amber-200 text-xs space-y-1">
+            <div class="font-bold flex items-center gap-2 text-amber-400">
+              <i data-lucide="bell" class="w-4 h-4"></i> Alertas de Cobro Próximo / Vencido
+            </div>
+            <ul id="alertasList" class="list-disc list-inside space-y-1"></ul>
+          </div>
+
+          <!-- Tabla de Clientes -->
+          <div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-xl">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-zinc-300">
+                <thead class="bg-zinc-950 text-zinc-400 uppercase tracking-wider font-semibold border-b border-zinc-800">
+                  <tr>
+                    <th class="p-3">Cliente</th>
+                    <th class="p-3">Ubicación</th>
+                    <th class="p-3">Monto Total</th>
+                    <th class="p-3">Saldo Pendiente</th>
+                    <th class="p-3">Próximo Cobro</th>
+                    <th class="p-3">Estado</th>
+                    <th class="p-3 text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaClientesBody" class="divide-y divide-zinc-800/60">
+                  <!-- Se llena dinámicamente -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECCIÓN 2: SIMULADOR -->
+        <section id="secSimulador" class="hidden space-y-6">
+          <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 max-w-2xl mx-auto space-y-4">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i data-lucide="calculator" class="w-5 h-5 text-zinc-400"></i> Simulador de Préstamos
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-zinc-400 mb-1">Monto a Prestar ($)</label>
+                <input type="number" id="simMonto" value="500000" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-zinc-400 mb-1">Interés Total (%)</label>
+                <input type="number" id="simInteres" value="20" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-zinc-400 mb-1">Número de Cuotas</label>
+                <input type="number" id="simCuotas" value="30" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-zinc-400 mb-1">Frecuencia de Pago</label>
+                <select id="simFrecuencia" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+                  <option value="diario">Diario</option>
+                  <option value="semanal">Semanal</option>
+                  <option value="quincenal">Quincenal</option>
+                  <option value="mensual">Mensual</option>
+                </select>
+              </div>
+            </div>
+            <button onclick="calcularSimulacion()" class="w-full py-2.5 bg-zinc-200 hover:bg-white text-black font-bold rounded-lg text-xs transition">
+              Calcular Simulación
+            </button>
+
+            <div id="simResultado" class="hidden pt-4 border-t border-zinc-800 space-y-2 text-xs">
+              <div class="flex justify-between text-zinc-400"><span>Monto Total con Interés:</span> <strong id="resTotal" class="text-white"></strong></div>
+              <div class="flex justify-between text-zinc-400"><span>Valor por Cuota:</span> <strong id="resValorCuota" class="text-green-400 text-sm"></strong></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECCIÓN 3: CONFIGURACIÓN (Solo Admin) -->
+        <section id="secConfiguracion" class="hidden space-y-6 max-w-2xl mx-auto">
+          <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i data-lucide="user-cog" class="w-5 h-5 text-zinc-400"></i> Gestión de Usuarios del Sistema
+            </h2>
+            <form onsubmit="event.preventDefault(); crearNuevoUsuario();" class="space-y-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-zinc-400 mb-1">Nombre Usuario</label>
+                  <input type="text" id="nuevoUsuNombre" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-zinc-400 mb-1">Contraseña</label>
+                  <input type="password" id="nuevoUsuPass" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+                </div>
+              </div>
+              <button type="submit" class="w-full py-2 bg-zinc-200 hover:bg-white text-black font-bold text-xs rounded-lg transition">
+                Crear Usuario Acceso
+              </button>
+            </form>
+
+            <div class="pt-4 border-t border-zinc-800">
+              <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Usuarios Registrados</h3>
+              <ul id="listaUsuariosAdmin" class="space-y-2 text-xs"></ul>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL: NUEVO CLIENTE -->
+  <div id="modalCliente" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
+        <h3 class="font-bold text-white text-base">Registrar Nuevo Cliente</h3>
+        <button onclick="cerrarModalNuevoCliente()" class="text-zinc-500 hover:text-white">&times;</button>
+      </div>
+
+      <form onsubmit="event.preventDefault(); guardarNuevoCliente();" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-zinc-400 mb-1">Nombre Completo *</label>
+          <input type="text" id="cliNombre" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+        </div>
+        <div>
+          <label class="block font-semibold text-zinc-400 mb-1">Cédula / Documento *</label>
+          <input type="text" id="cliCedula" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+        </div>
+        <div>
+          <label class="block font-semibold text-zinc-400 mb-1">Teléfono / WhatsApp *</label>
+          <input type="tel" id="cliTelefono" placeholder="3001234567" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+        </div>
+        
+        <!-- Opcionales -->
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-semibold text-zinc-400 mb-1">Barrio (Opcional)</label>
+            <input type="text" id="cliBarrio" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-400 mb-1">Dirección (Opcional)</label>
+            <input type="text" id="cliDireccion" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 border-t border-zinc-800 pt-2">
+          <div>
+            <label class="block font-semibold text-zinc-400 mb-1">Monto Préstamo ($) *</label>
+            <input type="number" id="cliMonto" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-400 mb-1">Interés Total (%) *</label>
+            <input type="number" id="cliInteres" value="20" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-zinc-400 mb-1">Fecha de Próximo Cobro *</label>
+          <input type="date" id="cliFechaCobro" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+        </div>
+
+        <div class="pt-2 flex gap-2">
+          <button type="button" onclick="cerrarModalNuevoCliente()" class="w-1/2 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold rounded-lg">Cancelar</button>
+          <button type="submit" class="w-1/2 py-2.5 bg-white hover:bg-zinc-200 text-black font-bold rounded-lg">Guardar Cliente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: REGISTRAR PAGO -->
+  <div id="modalPago" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-sm w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
+        <h3 class="font-bold text-white text-sm">Registrar Pago / Abono</h3>
+        <button onclick="cerrarModalPago()" class="text-zinc-500 hover:text-white">&times;</button>
+      </div>
+
+      <form onsubmit="event.preventDefault(); procesarPago();" class="space-y-3 text-xs">
+        <input type="hidden" id="pagoClienteId">
+        <div>
+          <p class="text-zinc-400">Cliente: <strong id="pagoClienteNombre" class="text-white"></strong></p>
+          <p class="text-zinc-400">Saldo Pendiente: <strong id="pagoSaldoPendiente" class="text-amber-400"></strong></p>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-zinc-400 mb-1">Monto del Abono ($) *</label>
+          <input type="number" id="pagoMonto" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-zinc-400 mb-1">Método de Pago *</label>
+          <select id="pagoMetodo" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+            <option value="Efectivo">Efectivo 💵</option>
+            <option value="Transferencia">Transferencia 🏦</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-zinc-400 mb-1">Nueva Fecha de Próximo Cobro</label>
+          <input type="date" id="pagoNuevaFecha" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+        </div>
+
+        <div class="pt-2 flex gap-2">
+          <button type="button" onclick="cerrarModalPago()" class="w-1/2 py-2.5 bg-zinc-800 text-zinc-300 rounded-lg">Cancelar</button>
+          <button type="submit" class="w-1/2 py-2.5 bg-green-500 hover:bg-green-400 text-black font-bold rounded-lg">Confirmar Pago</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT LOGICA Y PERSISTENCIA -->
+  <script>
+    // --- ESTADO Y CLAVES DE ALMACENAMIENTO ---
+    const STORAGE_KEY_DATA = 'jm_finans_db_v2';
+    const STORAGE_KEY_USERS = 'jm_finans_users_v2';
+
+    let usuarioActual = null;
+
+    // Usuarios Iniciales (Jean Admin)
+    let usuarios = JSON.parse(localStorage.getItem(STORAGE_KEY_USERS)) || [
+      { user: 'Jean', pass: '1111482752', role: 'admin' }
+    ];
+
+    // Datos Clientes
+    let clientes = JSON.parse(localStorage.getItem(STORAGE_KEY_DATA)) || [];
+
+    // Guardar en localStorage
+    function persistirTodo() {
+      localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(clientes));
+      localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(usuarios));
+    }
+
+    // Inicializar iconos
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      verificarAlertas();
+    });
+
+    // --- AUTENTICACIÓN ---
+    function iniciarSesion() {
+      const u = document.getElementById('loginUser').value.trim();
+      const p = document.getElementById('loginPass').value.trim();
+      const err = document.getElementById('loginError');
+
+      const encontrado = usuarios.find(x => x.user.toLowerCase() === u.toLowerCase() && x.pass === p);
+
+      if (encontrado) {
+        usuarioActual = encontrado;
+        err.classList.add('hidden');
+        document.getElementById('loginView').classList.add('hidden');
+        document.getElementById('dashboardView').classList.remove('hidden');
+        document.getElementById('userRoleBadge').innerText = encontrado.role === 'admin' ? 'Administrador' : 'Operador';
+        
+        if (encontrado.role === 'admin') {
+          document.getElementById('configNavBtn').classList.remove('hidden');
+          document.getElementById('tabConfig').classList.remove('hidden');
+        } else {
+          document.getElementById('configNavBtn').classList.add('hidden');
+          document.getElementById('tabConfig').classList.add('hidden');
+        }
+
+        renderTablaClientes();
+        renderListaUsuariosAdmin();
+        verificarAlertas();
+      } else {
+        err.classList.remove('hidden');
+      }
+    }
+
+    function cerrarSesion() {
+      usuarioActual = null;
+      document.getElementById('loginForm').reset();
+      document.getElementById('dashboardView').classList.add('hidden');
+      document.getElementById('loginView').classList.remove('hidden');
+    }
+
+    // --- NAVEGACIÓN ---
+    function verSeccion(sec) {
+      document.getElementById('secClientes').classList.add('hidden');
+      document.getElementById('secSimulador').classList.add('hidden');
+      document.getElementById('secConfiguracion').classList.add('hidden');
+
+      document.getElementById('tabClientes').className = "px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap";
+      document.getElementById('tabSimulador').className = "px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap";
+      document.getElementById('tabConfig').className = "px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap";
+
+      if (sec === 'clientes') {
+        document.getElementById('secClientes').classList.remove('hidden');
+        document.getElementById('tabClientes').className = "px-4 py-2 text-sm font-semibold border-b-2 border-white text-white flex items-center gap-2 whitespace-nowrap";
+      } else if (sec === 'simulador') {
+        document.getElementById('secSimulador').classList.remove('hidden');
+        document.getElementById('tabSimulador').className = "px-4 py-2 text-sm font-semibold border-b-2 border-white text-white flex items-center gap-2 whitespace-nowrap";
+      } else if (sec === 'configuracion') {
+        document.getElementById('secConfiguracion').classList.remove('hidden');
+        document.getElementById('tabConfig').className = "px-4 py-2 text-sm font-semibold border-b-2 border-white text-white flex items-center gap-2 whitespace-nowrap";
+      }
+    }
+
+    // --- CLIENTES ---
+    function abrirModalNuevoCliente() {
+      document.getElementById('modalCliente').classList.remove('hidden');
+    }
+    function cerrarModalNuevoCliente() {
+      document.getElementById('modalCliente').classList.add('hidden');
+    }
+
+    function guardarNuevoCliente() {
+      const nombre = document.getElementById('cliNombre').value.trim();
+      const cedula = document.getElementById('cliCedula').value.trim();
+      const telefono = document.getElementById('cliTelefono').value.trim();
+      const barrio = document.getElementById('cliBarrio').value.trim();
+      const direccion = document.getElementById('cliDireccion').value.trim();
+      const monto = parseFloat(document.getElementById('cliMonto').value);
+      const interes = parseFloat(document.getElementById('cliInteres').value);
+      const fechaCobro = document.getElementById('cliFechaCobro').value;
+
+      const totalConInteres = monto + (monto * (interes / 100));
+
+      const nuevo = {
+        id: Date.now().toString(),
+        nombre,
+        cedula,
+        telefono,
+        barrio: barrio || 'N/A',
+        direccion: direccion || 'N/A',
+        montoTotal: totalConInteres,
+        saldoPendiente: totalConInteres,
+        fechaCobro,
+        estado: 'ACTIVO',
+        historialPagos: []
+      };
+
+      clientes.push(nuevo);
+      persistirTodo();
+      cerrarModalNuevoCliente();
+      renderTablaClientes();
+      verificarAlertas();
+    }
+
+    function renderTablaClientes() {
+      const tbody = document.getElementById('tablaClientesBody');
+      tbody.innerHTML = '';
+
+      if (clientes.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-zinc-500">No hay clientes registrados en el sistema.</td></tr>`;
+        return;
+      }
+
+      clientes.forEach(cli => {
+        const tr = document.createElement('tr');
+        
+        const badgeColor = cli.estado === 'PAGADO' 
+          ? 'bg-green-950/60 text-green-400 border-green-800' 
+          : 'bg-amber-950/60 text-amber-400 border-amber-800';
+
+        tr.innerHTML = `
+          <td class="p-3">
+            <div class="font-bold text-white">${cli.nombre}</div>
+            <div class="text-[10px] text-zinc-400">CC: ${cli.cedula} | Tel: ${cli.telefono}</div>
+          </td>
+          <td class="p-3 text-zinc-400">
+            <div>${cli.barrio}</div>
+            <div class="text-[10px] text-zinc-500">${cli.direccion}</div>
+          </td>
+          <td class="p-3 font-semibold text-zinc-200">$${cli.montoTotal.toLocaleString()}</td>
+          <td class="p-3 font-bold ${cli.saldoPendiente > 0 ? 'text-amber-400' : 'text-green-400'}">$${cli.saldoPendiente.toLocaleString()}</td>
+          <td class="p-3 text-zinc-300">${cli.fechaCobro || 'N/A'}</td>
+          <td class="p-3">
+            <span class="px-2 py-0.5 text-[10px] rounded-md font-bold border ${badgeColor}">${cli.estado}</span>
+          </td>
+          <td class="p-3 text-right space-x-1">
+            ${cli.saldoPendiente > 0 ? `
+              <button onclick="abrirModalPago('${cli.id}')" class="px-2.5 py-1 bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-700/50 rounded-md font-semibold text-[11px]">
+                + Abono
+              </button>
+            ` : ''}
+            <button onclick="enviarReciboWhatsApp('${cli.id}')" class="px-2.5 py-1 bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-800 rounded-md text-[11px]" title="Enviar Recibo WhatsApp">
+              📲 Recibo
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // --- ALERTAS ---
+    function verificarAlertas() {
+      const contenedor = document.getElementById('alertasContainer');
+      const lista = document.getElementById('alertasList');
+      lista.innerHTML = '';
+
+      const hoy = new Date().toISOString().split('T')[0];
+
+      let contadorAlertas = 0;
+
+      clientes.forEach(cli => {
+        if (cli.saldoPendiente > 0 && cli.fechaCobro) {
+          if (cli.fechaCobro <= hoy) {
+            contadorAlertas++;
+            const li = document.createElement('li');
+            li.innerHTML = `<strong>${cli.nombre}</strong> - Cobro programado para hoy o vencido (${cli.fechaCobro}). Saldo: $${cli.saldoPendiente.toLocaleString()}`;
+            lista.appendChild(li);
+          }
+        }
+      });
+
+      if (contadorAlertas > 0) {
+        contenedor.classList.remove('hidden');
+      } else {
+        contenedor.classList.add('hidden');
+      }
+    }
+
+    // --- PAGOS ---
+    function abrirModalPago(id) {
+      const cli = clientes.find(c => c.id === id);
+      if (!cli) return;
+
+      document.getElementById('pagoClienteId').value = cli.id;
+      document.getElementById('pagoClienteNombre').innerText = cli.nombre;
+      document.getElementById('pagoSaldoPendiente').innerText = '$' + cli.saldoPendiente.toLocaleString();
+      document.getElementById('pagoMonto').value = '';
+      document.getElementById('modalPago').classList.remove('hidden');
+    }
+
+    function cerrarModalPago() {
+      document.getElementById('modalPago').classList.add('hidden');
+    }
+
+    function procesarPago() {
+      const id = document.getElementById('pagoClienteId').value;
+      const monto = parseFloat(document.getElementById('pagoMonto').value);
+      const metodo = document.getElementById('pagoMetodo').value;
+      const nuevaFecha = document.getElementById('pagoNuevaFecha').value;
+
+      const cli = clientes.find(c => c.id === id);
+      if (!cli || isNaN(monto)) return;
+
+      cli.saldoPendiente -= monto;
+      if (nuevaFecha) cli.fechaCobro = nuevaFecha;
+
+      cli.historialPagos.push({
+        fecha: new Date().toLocaleDateString(),
+        monto,
+        metodo
+      });
+
+      if (cli.saldoPendiente <= 0) {
+        cli.saldoPendiente = 0;
+        cli.estado = 'PAGADO';
+      }
+
+      persistirTodo();
+      cerrarModalPago();
+      renderTablaClientes();
+      verificarAlertas();
+
+      // Abrir recibo WhatsApp opcional
+      if (confirm("¿Deseas enviar el recibo de pago por WhatsApp al cliente?")) {
+        enviarReciboWhatsApp(cli.id, monto, metodo);
+      }
+    }
+
+    function enviarReciboWhatsApp(id, ultimoMonto = 0, metodo = 'Efectivo') {
+      const cli = clientes.find(c => c.id === id);
+      if (!cli) return;
+
+      let msg = `*JM FINANS - COMPROBANTE DE PAGO*\n`;
+      msg += `-----------------------------------\n`;
+      msg += `Cliente: *${cli.nombre}*\n`;
+      if (ultimoMonto > 0) {
+        msg += `Abono Recibido: *$${ultimoMonto.toLocaleString()}*\n`;
+        msg += `Método de Pago: *${metodo}*\n`;
+      }
+      msg += `Saldo Pendiente: *$${cli.saldoPendiente.toLocaleString()}*\n`;
+      msg += `Estado del Crédito: *${cli.estado}*\n`;
+      if (cli.saldoPendiente > 0 && cli.fechaCobro) {
+        msg += `Próxima fecha de cobro: *${cli.fechaCobro}*\n`;
+      }
+      msg += `-----------------------------------\n`;
+      msg += `¡Gracias por su preferencia!`;
+
+      const telLimpio = cli.telefono.replace(/\D/g, '');
+      const url = `https://wa.me/57${telLimpio}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    // --- SIMULADOR ---
+    function calcularSimulacion() {
+      const m = parseFloat(document.getElementById('simMonto').value);
+      const i = parseFloat(document.getElementById('simInteres').value);
+      const c = parseInt(document.getElementById('simCuotas').value);
+
+      if (isNaN(m) || isNaN(i) || isNaN(c) || c <= 0) return;
+
+      const total = m + (m * (i / 100));
+      const valorCuota = total / c;
+
+      document.getElementById('resTotal').innerText = '$' + total.toLocaleString();
+      document.getElementById('resValorCuota').innerText = '$' + valorCuota.toLocaleString('es-CO', { maximumFractionDigits: 0 });
+      document.getElementById('simResultado').classList.remove('hidden');
+    }
+
+    // --- ADMINISTRACIÓN USUARIOS ---
+    function crearNuevoUsuario() {
+      const u = document.getElementById('nuevoUsuNombre').value.trim();
+      const p = document.getElementById('nuevoUsuPass').value.trim();
+
+      if (!u || !p) return;
+
+      usuarios.push({ user: u, pass: p, role: 'operador' });
+      persistirTodo();
+      renderListaUsuariosAdmin();
+      alert(`Usuario ${u} creado con éxito.`);
+      document.getElementById('nuevoUsuNombre').value = '';
+      document.getElementById('nuevoUsuPass').value = '';
+    }
+
+    function renderListaUsuariosAdmin() {
+      const ul = document.getElementById('listaUsuariosAdmin');
+      ul.innerHTML = '';
+
+      usuarios.forEach((u, index) => {
+        const li = document.createElement('li');
+        li.className = "flex justify-between items-center bg-zinc-950 p-2.5 rounded-lg border border-zinc-800";
+        li.innerHTML = `
+          <div>
+            <span class="font-bold text-white">${u.user}</span> 
+            <span class="text-[10px] text-zinc-500">(${u.role})</span>
+            <div class="text-[10px] text-zinc-400">Contraseña: ••••••••</div>
+          </div>
+          ${u.role !== 'admin' ? `
+            <button onclick="eliminarUsuario(${index})" class="text-red-400 hover:text-red-300 text-xs">Eliminar</button>
+          ` : '<span class="text-[10px] text-zinc-500">Principal</span>'}
+        `;
+        ul.appendChild(li);
+      });
+    }
+
+    function eliminarUsuario(idx) {
+      if (confirm("¿Estás seguro de eliminar este usuario?")) {
+        usuarios.splice(idx, 1);
+        persistirTodo();
+        renderListaUsuariosAdmin();
+      }
+    }
+  </script>
+</body>
+</html>

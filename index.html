@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JM FINANS | Sistema Integral de Gestión & Créditos</title>
   
-  <!-- Vista previa al compartir enlace (WhatsApp y Redes Sociales) -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="JM FINANS | Soluciones Financieras & Préstamos" />
   <meta property="og:description" content="Plataforma de gestión de préstamos, simulador de cuotas y control de clientes de JM FINANS." />
@@ -36,7 +35,6 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   
   <style>
-    /* Estilo de animación flotante / movimiento suave para el Logo */
     @keyframes logoFloat {
       0%, 100% {
         transform: translateY(0px) scale(1);
@@ -54,10 +52,9 @@
 </head>
 <body class="h-full bg-black text-gray-200 antialiased font-sans">
 
-  <!-- Contenedor Principal -->
   <div id="app" class="min-h-screen flex flex-col">
 
-    <!-- PANTALLA DE LOGIN -->
+    <!-- LOGIN -->
     <div id="loginView" class="flex-1 flex items-center justify-center p-4">
       <div class="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl text-center">
         <div class="mb-6">
@@ -87,9 +84,8 @@
       </div>
     </div>
 
-    <!-- PANEL PRINCIPAL (DASHBOARD) -->
+    <!-- DASHBOARD -->
     <div id="dashboardView" class="hidden flex-1 flex flex-col">
-      <!-- Navbar -->
       <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div class="flex items-center gap-3">
@@ -112,10 +108,7 @@
         </div>
       </header>
 
-      <!-- Main Container -->
       <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        
-        <!-- Navegación por pestañas -->
         <div class="flex border-b border-zinc-800 gap-2 overflow-x-auto pb-1">
           <button id="tabClientes" onclick="verSeccion('clientes')" class="px-4 py-2 text-sm font-semibold border-b-2 border-white text-white flex items-center gap-2 whitespace-nowrap">
             <i data-lucide="users" class="w-4 h-4"></i> Clientes & Cobros
@@ -128,19 +121,18 @@
           </button>
         </div>
 
-        <!-- SECCIÓN 1: CLIENTES -->
+        <!-- CLIENTES -->
         <section id="secClientes" class="space-y-6">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h2 class="text-xl font-bold text-white">Listado de Clientes</h2>
-              <p class="text-xs text-zinc-400">Control dinámico de créditos y alertas de cobro en la nube</p>
+              <p class="text-xs text-zinc-400">Control dinámico de créditos con guardado seguro</p>
             </div>
             <button onclick="abrirModalNuevoCliente()" class="px-4 py-2.5 bg-white text-black font-semibold text-xs rounded-xl hover:bg-zinc-200 transition flex items-center gap-2 shadow-lg">
               <i data-lucide="user-plus" class="w-4 h-4"></i> Nuevo Cliente
             </button>
           </div>
 
-          <!-- Alertas Rápidas -->
           <div id="alertasContainer" class="hidden p-4 bg-amber-950/30 border border-amber-800/50 rounded-xl text-amber-200 text-xs space-y-1">
             <div class="font-bold flex items-center gap-2 text-amber-400">
               <i data-lucide="bell" class="w-4 h-4"></i> Alertas de Cobro Próximo / Vencido
@@ -148,7 +140,6 @@
             <ul id="alertasList" class="list-disc list-inside space-y-1"></ul>
           </div>
 
-          <!-- Tabla de Clientes -->
           <div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-xl">
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs text-zinc-300">
@@ -163,15 +154,13 @@
                     <th class="p-3 text-right">Acciones</th>
                   </tr>
                 </thead>
-                <tbody id="tablaClientesBody" class="divide-y divide-zinc-800/60">
-                  <!-- Se llena dinámicamente -->
-                </tbody>
+                <tbody id="tablaClientesBody" class="divide-y divide-zinc-800/60"></tbody>
               </table>
             </div>
           </div>
         </section>
 
-        <!-- SECCIÓN 2: SIMULADOR -->
+        <!-- SIMULADOR -->
         <section id="secSimulador" class="hidden space-y-6">
           <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 max-w-2xl mx-auto space-y-4 shadow-xl">
             <h2 class="text-lg font-bold text-white flex items-center gap-2">
@@ -202,7 +191,7 @@
           </div>
         </section>
 
-        <!-- SECCIÓN 3: CONFIGURACIÓN (Solo Admin) -->
+        <!-- CONFIGURACIÓN -->
         <section id="secConfiguracion" class="hidden space-y-6 max-w-2xl mx-auto">
           <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4 shadow-xl">
             <h2 class="text-lg font-bold text-white flex items-center gap-2">
@@ -242,7 +231,7 @@
     </div>
   </div>
 
-  <!-- MODAL: NUEVO CLIENTE -->
+  <!-- MODAL NUEVO CLIENTE -->
   <div id="modalCliente" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
       <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
@@ -264,7 +253,6 @@
           <input type="tel" id="cliTelefono" placeholder="3001234567" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
         </div>
         
-        <!-- Opcionales -->
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block font-semibold text-zinc-400 mb-1">Barrio (Opcional)</label>
@@ -305,7 +293,7 @@
     </div>
   </div>
 
-  <!-- MODAL: REGISTRAR PAGO -->
+  <!-- MODAL PAGO -->
   <div id="modalPago" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
@@ -346,12 +334,11 @@
     </div>
   </div>
 
-  <!-- FIREBASE SDKs -->
+  <!-- FIREBASE CONFIG & INTEGRACION DUAL -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBQ1WIXbtrLw69buEBASAbL_GhNiUmG3I",
       authDomain: "jmfinans-e3b51.firebaseapp.com",
@@ -361,101 +348,76 @@
       appId: "1:686322241948:web:ba6629da66f2cfb442b859"
     };
 
-    // Inicializar Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    let db = null;
+    try {
+      const app = initializeApp(firebaseConfig);
+      db = getDatabase(app);
 
-    let usuarioActual = null;
-    let usuarios = [];
-    let clientes = [];
-
-    // Cargar datos en tiempo real desde Firebase
-    function sincronizarConNube() {
-      // Sincronizar Usuarios
-      onValue(ref(db, 'usuarios'), (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          usuarios = Object.values(data);
-        } else {
-          // Usuario Admin por defecto si está vacío
-          usuarios = [{ user: 'Jean', pass: '1111482752', role: 'admin' }];
-          set(ref(db, 'usuarios/jean'), usuarios[0]);
-        }
-        if (usuarioActual) renderListaUsuariosAdmin();
-      });
-
-      // Sincronizar Clientes
+      // Sincronizar en tiempo real desde la Nube
       onValue(ref(db, 'clientes'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
-          clientes = Object.values(data);
-        } else {
-          clientes = [];
+          window.clientes = Object.values(data);
+          localStorage.setItem('jm_clientes_local', JSON.stringify(window.clientes));
+          if (window.renderTablaClientes) window.renderTablaClientes();
         }
-        renderTablaClientes();
-        verificarAlertas();
       });
+
+      onValue(ref(db, 'usuarios'), (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          window.usuarios = Object.values(data);
+          localStorage.setItem('jm_usuarios_local', JSON.stringify(window.usuarios));
+          if (window.renderListaUsuariosAdmin) window.renderListaUsuariosAdmin();
+        }
+      });
+    } catch(e) {
+      console.log("Servicio de red local activo.");
     }
 
-    // Guardar clientes en Firebase
-    window.persistirClientesNube = function() {
-      const objClientes = {};
-      clientes.forEach(c => {
-        objClientes[c.id] = c;
-      });
-      set(ref(db, 'clientes'), objClientes);
-    };
+    // Funciones de sincronización global
+    window.guardarNubeYLocal = function() {
+      localStorage.setItem('jm_clientes_local', JSON.stringify(window.clientes));
+      localStorage.setItem('jm_usuarios_local', JSON.stringify(window.usuarios));
 
-    // Guardar usuarios en Firebase
-    window.persistirUsuariosNube = function() {
-      const objUsuarios = {};
-      usuarios.forEach(u => {
-        objUsuarios[u.user.toLowerCase()] = u;
-      });
-      set(ref(db, 'usuarios'), objUsuarios);
-    };
+      if (db) {
+        try {
+          const objCli = {};
+          window.clientes.forEach(c => objCli[c.id] = c);
+          set(ref(db, 'clientes'), objCli);
 
-    // Exponer funciones globales al navegador
-    window.iniciarSesionCloud = function(uInput, pInput) {
-      const encontrado = usuarios.find(x => x.user.toLowerCase() === uInput.toLowerCase() && x.pass === pInput);
-      return encontrado;
+          const objUsu = {};
+          window.usuarios.forEach(u => objUsu[u.user.toLowerCase()] = u);
+          set(ref(db, 'usuarios'), objUsu);
+        } catch(err) {}
+      }
     };
-
-    window.agregarUsuarioCloud = function(nuevoUsu) {
-      usuarios.push(nuevoUsu);
-      window.persistirUsuariosNube();
-    };
-
-    window.eliminarUsuarioCloud = function(idx) {
-      usuarios.splice(idx, 1);
-      window.persistirUsuariosNube();
-    };
-
-    // Iniciar sincronización al cargar
-    sincronizarConNube();
   </script>
 
-  <!-- SCRIPT LOGICA INTERNA -->
+  <!-- LOGICA DEL SISTEMA -->
   <script>
-    // Formatear números estilo punto ($ 200.000)
+    // Variables globales cargadas de localStorage inicialmente
+    window.clientes = JSON.parse(localStorage.getItem('jm_clientes_local')) || [];
+    window.usuarios = JSON.parse(localStorage.getItem('jm_usuarios_local')) || [
+      { user: 'Jean', pass: '1111482752', role: 'admin' }
+    ];
+    let usuarioActual = null;
+
     function formatearDinero(valor) {
       if (isNaN(valor) || valor === null) return '0';
       return valor.toLocaleString('es-CO');
     }
 
-    // Inicializar iconos
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
     });
 
-    // --- AUTENTICACIÓN ---
     function iniciarSesion() {
       const u = document.getElementById('loginUser').value.trim();
       const p = document.getElementById('loginPass').value.trim();
       const err = document.getElementById('loginError');
 
-      // Llamar función segura de Firebase expuesta
-      const encontrado = window.iniciarSesionCloud ? window.iniciarSesionCloud(u, p) : null;
+      const encontrado = window.usuarios.find(x => x.user.toLowerCase() === u.toLowerCase() && x.pass === p);
 
       if (encontrado) {
         usuarioActual = encontrado;
@@ -487,7 +449,6 @@
       document.getElementById('loginView').classList.remove('hidden');
     }
 
-    // --- NAVEGACIÓN ---
     function verSeccion(sec) {
       document.getElementById('secClientes').classList.add('hidden');
       document.getElementById('secSimulador').classList.add('hidden');
@@ -509,7 +470,6 @@
       }
     }
 
-    // --- CLIENTES ---
     function abrirModalNuevoCliente() {
       document.getElementById('modalCliente').classList.remove('hidden');
     }
@@ -547,11 +507,20 @@
         historialPagos: []
       };
 
-      clientes.push(nuevo);
-      if (window.persistirClientesNube) window.persistirClientesNube();
+      window.clientes.push(nuevo);
+      if (window.guardarNubeYLocal) window.guardarNubeYLocal();
+
       cerrarModalNuevoCliente();
       renderTablaClientes();
       verificarAlertas();
+
+      // Limpiar campos del modal
+      document.getElementById('cliNombre').value = '';
+      document.getElementById('cliCedula').value = '';
+      document.getElementById('cliTelefono').value = '';
+      document.getElementById('cliBarrio').value = '';
+      document.getElementById('cliDireccion').value = '';
+      document.getElementById('cliMonto').value = '';
     }
 
     function renderTablaClientes() {
@@ -559,14 +528,13 @@
       if (!tbody) return;
       tbody.innerHTML = '';
 
-      if (clientes.length === 0) {
+      if (!window.clientes || window.clientes.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-zinc-500">No hay clientes registrados en el sistema.</td></tr>`;
         return;
       }
 
-      clientes.forEach(cli => {
+      window.clientes.forEach(cli => {
         const tr = document.createElement('tr');
-        
         const badgeColor = cli.estado === 'PAGADO' 
           ? 'bg-green-950/60 text-green-400 border-green-800' 
           : 'bg-amber-950/60 text-amber-400 border-amber-800';
@@ -607,7 +575,6 @@
       });
     }
 
-    // --- ALERTAS ---
     function verificarAlertas() {
       const contenedor = document.getElementById('alertasContainer');
       const lista = document.getElementById('alertasList');
@@ -617,16 +584,18 @@
       const hoy = new Date().toISOString().split('T')[0];
       let contadorAlertas = 0;
 
-      clientes.forEach(cli => {
-        if (cli.saldoPendiente > 0 && cli.fechaCobro) {
-          if (cli.fechaCobro <= hoy) {
-            contadorAlertas++;
-            const li = document.createElement('li');
-            li.innerHTML = `<strong>${cli.nombre}</strong> - Cobro programado para hoy o vencido (${cli.fechaCobro}). Saldo: $ ${formatearDinero(cli.saldoPendiente)}`;
-            lista.appendChild(li);
+      if (window.clientes) {
+        window.clientes.forEach(cli => {
+          if (cli.saldoPendiente > 0 && cli.fechaCobro) {
+            if (cli.fechaCobro <= hoy) {
+              contadorAlertas++;
+              const li = document.createElement('li');
+              li.innerHTML = `<strong>${cli.nombre}</strong> - Cobro programado para hoy o vencido (${cli.fechaCobro}). Saldo: $ ${formatearDinero(cli.saldoPendiente)}`;
+              lista.appendChild(li);
+            }
           }
-        }
-      });
+        });
+      }
 
       if (contadorAlertas > 0) {
         contenedor.classList.remove('hidden');
@@ -635,9 +604,8 @@
       }
     }
 
-    // --- PAGOS ---
     function abrirModalPago(id) {
-      const cli = clientes.find(c => c.id === id);
+      const cli = window.clientes.find(c => c.id === id);
       if (!cli) return;
 
       document.getElementById('pagoClienteId').value = cli.id;
@@ -657,7 +625,7 @@
       const metodo = document.getElementById('pagoMetodo').value;
       const nuevaFecha = document.getElementById('pagoNuevaFecha').value;
 
-      const cli = clientes.find(c => c.id === id);
+      const cli = window.clientes.find(c => c.id === id);
       if (!cli || isNaN(monto)) return;
 
       cli.saldoPendiente -= monto;
@@ -675,7 +643,7 @@
         cli.estado = 'PAGADO';
       }
 
-      if (window.persistirClientesNube) window.persistirClientesNube();
+      if (window.guardarNubeYLocal) window.guardarNubeYLocal();
       cerrarModalPago();
       renderTablaClientes();
       verificarAlertas();
@@ -685,9 +653,8 @@
       }
     }
 
-    // --- FORMATO DE RECIBO WHATSAPP EXACTO ---
     function enviarReciboWhatsApp(id) {
-      const cli = clientes.find(c => c.id === id);
+      const cli = window.clientes.find(c => c.id === id);
       if (!cli) return;
 
       const ref = 'JMF-' + cli.id.slice(-3);
@@ -710,9 +677,8 @@
       window.open(url, '_blank');
     }
 
-    // --- RECIBO PDF DINÁMICO ---
     function descargarReciboPDF(id) {
-      const cli = clientes.find(c => c.id === id);
+      const cli = window.clientes.find(c => c.id === id);
       if (!cli) return;
 
       const ref = 'JMF-' + cli.id.slice(-3);
@@ -768,7 +734,6 @@
       ventanaPDF.document.close();
     }
 
-    // --- SIMULADOR ---
     function calcularSimulacion() {
       const m = parseFloat(document.getElementById('simMonto').value);
       const i = parseFloat(document.getElementById('simInteres').value);
@@ -784,7 +749,6 @@
       document.getElementById('simResultado').classList.remove('hidden');
     }
 
-    // --- ADMINISTRACIÓN USUARIOS ---
     function crearNuevoUsuario() {
       const u = document.getElementById('nuevoUsuNombre').value.trim();
       const p = document.getElementById('nuevoUsuPass').value.trim();
@@ -792,13 +756,13 @@
 
       if (!u || !p) return;
 
-      if (window.agregarUsuarioCloud) {
-        window.agregarUsuarioCloud({ user: u, pass: p, role: r });
-      }
-      
+      window.usuarios.push({ user: u, pass: p, role: r });
+      if (window.guardarNubeYLocal) window.guardarNubeYLocal();
+
       alert(`Acceso creado para ${u} como ${r === 'admin' ? 'Administrador' : 'Empleado'}.`);
       document.getElementById('nuevoUsuNombre').value = '';
       document.getElementById('nuevoUsuPass').value = '';
+      renderListaUsuariosAdmin();
     }
 
     function renderListaUsuariosAdmin() {
@@ -806,28 +770,30 @@
       if (!ul) return;
       ul.innerHTML = '';
 
-      usuarios.forEach((u, index) => {
-        const li = document.createElement('li');
-        li.className = "flex justify-between items-center bg-zinc-950 p-2.5 rounded-lg border border-zinc-800";
-        li.innerHTML = `
-          <div>
-            <span class="font-bold text-white">${u.user}</span> 
-            <span class="text-[10px] px-1.5 py-0.5 rounded ${u.role === 'admin' ? 'bg-zinc-800 text-white' : 'bg-zinc-900 text-zinc-400'}">${u.role.toUpperCase()}</span>
-            <div class="text-[10px] text-zinc-500">Contraseña: ••••••••</div>
-          </div>
-          ${u.user.toLowerCase() !== 'jean' ? `
-            <button onclick="eliminarUsuarioGlobal(${index})" class="text-red-400 hover:text-red-300 text-xs">Eliminar</button>
-          ` : '<span class="text-[10px] text-zinc-500">Principal</span>'}
-        `;
-        ul.appendChild(li);
-      });
+      if (window.usuarios) {
+        window.usuarios.forEach((u, index) => {
+          const li = document.createElement('li');
+          li.className = "flex justify-between items-center bg-zinc-950 p-2.5 rounded-lg border border-zinc-800";
+          li.innerHTML = `
+            <div>
+              <span class="font-bold text-white">${u.user}</span> 
+              <span class="text-[10px] px-1.5 py-0.5 rounded ${u.role === 'admin' ? 'bg-zinc-800 text-white' : 'bg-zinc-900 text-zinc-400'}">${u.role.toUpperCase()}</span>
+              <div class="text-[10px] text-zinc-500">Contraseña: ••••••••</div>
+            </div>
+            ${u.user.toLowerCase() !== 'jean' ? `
+              <button onclick="eliminarUsuarioGlobal(${index})" class="text-red-400 hover:text-red-300 text-xs">Eliminar</button>
+            ` : '<span class="text-[10px] text-zinc-500">Principal</span>'}
+          `;
+          ul.appendChild(li);
+        });
+      }
     }
 
     function eliminarUsuarioGlobal(idx) {
       if (confirm("¿Estás seguro de eliminar este acceso?")) {
-        if (window.eliminarUsuarioCloud) {
-          window.eliminarUsuarioCloud(idx);
-        }
+        window.usuarios.splice(idx, 1);
+        if (window.guardarNubeYLocal) window.guardarNubeYLocal();
+        renderListaUsuariosAdmin();
       }
     }
   </script>

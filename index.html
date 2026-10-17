@@ -133,7 +133,7 @@
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h2 class="text-xl font-bold text-white">Listado de Clientes</h2>
-              <p class="text-xs text-zinc-400">Control dinámico de créditos y alertas de cobro</p>
+              <p class="text-xs text-zinc-400">Control dinámico de créditos y alertas de cobro en la nube</p>
             </div>
             <button onclick="abrirModalNuevoCliente()" class="px-4 py-2.5 bg-white text-black font-semibold text-xs rounded-xl hover:bg-zinc-200 transition flex items-center gap-2 shadow-lg">
               <i data-lucide="user-plus" class="w-4 h-4"></i> Nuevo Cliente
@@ -346,28 +346,97 @@
     </div>
   </div>
 
-  <!-- SCRIPT LOGICA Y PERSISTENCIA -->
-  <script>
-    // --- ESTADO Y CLAVES DE ALMACENAMIENTO ---
-    const STORAGE_KEY_DATA = 'jm_finans_db_v6';
-    const STORAGE_KEY_USERS = 'jm_finans_users_v6';
+  <!-- FIREBASE SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBQ1WIXbtrLw69buEBASAbL_GhNiUmG3I",
+      authDomain: "jmfinans-e3b51.firebaseapp.com",
+      projectId: "jmfinans-e3b51",
+      storageBucket: "jmfinans-e3b51.firebasestorage.app",
+      messagingSenderId: "686322241948",
+      appId: "1:686322241948:web:ba6629da66f2cfb442b859"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
     let usuarioActual = null;
+    let usuarios = [];
+    let clientes = [];
 
-    // Usuarios Iniciales (Jean Admin)
-    let usuarios = JSON.parse(localStorage.getItem(STORAGE_KEY_USERS)) || [
-      { user: 'Jean', pass: '1111482752', role: 'admin' }
-    ];
+    // Cargar datos en tiempo real desde Firebase
+    function sincronizarConNube() {
+      // Sincronizar Usuarios
+      onValue(ref(db, 'usuarios'), (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          usuarios = Object.values(data);
+        } else {
+          // Usuario Admin por defecto si está vacío
+          usuarios = [{ user: 'Jean', pass: '1111482752', role: 'admin' }];
+          set(ref(db, 'usuarios/jean'), usuarios[0]);
+        }
+        if (usuarioActual) renderListaUsuariosAdmin();
+      });
 
-    // Datos Clientes
-    let clientes = JSON.parse(localStorage.getItem(STORAGE_KEY_DATA)) || [];
-
-    // Guardar en localStorage
-    function persistirTodo() {
-      localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(clientes));
-      localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(usuarios));
+      // Sincronizar Clientes
+      onValue(ref(db, 'clientes'), (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          clientes = Object.values(data);
+        } else {
+          clientes = [];
+        }
+        renderTablaClientes();
+        verificarAlertas();
+      });
     }
 
+    // Guardar clientes en Firebase
+    window.persistirClientesNube = function() {
+      const objClientes = {};
+      clientes.forEach(c => {
+        objClientes[c.id] = c;
+      });
+      set(ref(db, 'clientes'), objClientes);
+    };
+
+    // Guardar usuarios en Firebase
+    window.persistirUsuariosNube = function() {
+      const objUsuarios = {};
+      usuarios.forEach(u => {
+        objUsuarios[u.user.toLowerCase()] = u;
+      });
+      set(ref(db, 'usuarios'), objUsuarios);
+    };
+
+    // Exponer funciones globales al navegador
+    window.iniciarSesionCloud = function(uInput, pInput) {
+      const encontrado = usuarios.find(x => x.user.toLowerCase() === uInput.toLowerCase() && x.pass === pInput);
+      return encontrado;
+    };
+
+    window.agregarUsuarioCloud = function(nuevoUsu) {
+      usuarios.push(nuevoUsu);
+      window.persistirUsuariosNube();
+    };
+
+    window.eliminarUsuarioCloud = function(idx) {
+      usuarios.splice(idx, 1);
+      window.persistirUsuariosNube();
+    };
+
+    // Iniciar sincronización al cargar
+    sincronizarConNube();
+  </script>
+
+  <!-- SCRIPT LOGICA INTERNA -->
+  <script>
     // Formatear números estilo punto ($ 200.000)
     function formatearDinero(valor) {
       if (isNaN(valor) || valor === null) return '0';
@@ -377,7 +446,6 @@
     // Inicializar iconos
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
-      verificarAlertas();
     });
 
     // --- AUTENTICACIÓN ---
@@ -386,7 +454,8 @@
       const p = document.getElementById('loginPass').value.trim();
       const err = document.getElementById('loginError');
 
-      const encontrado = usuarios.find(x => x.user.toLowerCase() === u.toLowerCase() && x.pass === p);
+      // Llamar función segura de Firebase expuesta
+      const encontrado = window.iniciarSesionCloud ? window.iniciarSesionCloud(u, p) : null;
 
       if (encontrado) {
         usuarioActual = encontrado;
@@ -479,7 +548,7 @@
       };
 
       clientes.push(nuevo);
-      persistirTodo();
+      if (window.persistirClientesNube) window.persistirClientesNube();
       cerrarModalNuevoCliente();
       renderTablaClientes();
       verificarAlertas();
@@ -487,6 +556,7 @@
 
     function renderTablaClientes() {
       const tbody = document.getElementById('tablaClientesBody');
+      if (!tbody) return;
       tbody.innerHTML = '';
 
       if (clientes.length === 0) {
@@ -541,10 +611,10 @@
     function verificarAlertas() {
       const contenedor = document.getElementById('alertasContainer');
       const lista = document.getElementById('alertasList');
+      if (!contenedor || !lista) return;
       lista.innerHTML = '';
 
       const hoy = new Date().toISOString().split('T')[0];
-
       let contadorAlertas = 0;
 
       clientes.forEach(cli => {
@@ -605,7 +675,7 @@
         cli.estado = 'PAGADO';
       }
 
-      persistirTodo();
+      if (window.persistirClientesNube) window.persistirClientesNube();
       cerrarModalPago();
       renderTablaClientes();
       verificarAlertas();
@@ -615,7 +685,7 @@
       }
     }
 
-    // --- FORMATO DE RECIBO WHATSAPP EXACTO (ESTILO IMAGEN) ---
+    // --- FORMATO DE RECIBO WHATSAPP EXACTO ---
     function enviarReciboWhatsApp(id) {
       const cli = clientes.find(c => c.id === id);
       if (!cli) return;
@@ -626,7 +696,6 @@
       const totalAbonado = cli.totalAbonado ? formatearDinero(cli.totalAbonado) : '0';
       const saldoPendiente = cli.saldoPendiente ? formatearDinero(cli.saldoPendiente) : '0';
 
-      // Formato exacto con negritas (*) e itálicas (_) de WhatsApp
       let msg = `*JM FINANS - RECIBO DE PAGO*\n\n`;
       msg += `*Ref:* ${ref}\n`;
       msg += `*Cliente:* ${cli.nombre}\n`;
@@ -723,9 +792,10 @@
 
       if (!u || !p) return;
 
-      usuarios.push({ user: u, pass: p, role: r });
-      persistirTodo();
-      renderListaUsuariosAdmin();
+      if (window.agregarUsuarioCloud) {
+        window.agregarUsuarioCloud({ user: u, pass: p, role: r });
+      }
+      
       alert(`Acceso creado para ${u} como ${r === 'admin' ? 'Administrador' : 'Empleado'}.`);
       document.getElementById('nuevoUsuNombre').value = '';
       document.getElementById('nuevoUsuPass').value = '';
@@ -733,6 +803,7 @@
 
     function renderListaUsuariosAdmin() {
       const ul = document.getElementById('listaUsuariosAdmin');
+      if (!ul) return;
       ul.innerHTML = '';
 
       usuarios.forEach((u, index) => {
@@ -745,18 +816,18 @@
             <div class="text-[10px] text-zinc-500">Contraseña: ••••••••</div>
           </div>
           ${u.user.toLowerCase() !== 'jean' ? `
-            <button onclick="eliminarUsuario(${index})" class="text-red-400 hover:text-red-300 text-xs">Eliminar</button>
+            <button onclick="eliminarUsuarioGlobal(${index})" class="text-red-400 hover:text-red-300 text-xs">Eliminar</button>
           ` : '<span class="text-[10px] text-zinc-500">Principal</span>'}
         `;
         ul.appendChild(li);
       });
     }
 
-    function eliminarUsuario(idx) {
+    function eliminarUsuarioGlobal(idx) {
       if (confirm("¿Estás seguro de eliminar este acceso?")) {
-        usuarios.splice(idx, 1);
-        persistirTodo();
-        renderListaUsuariosAdmin();
+        if (window.eliminarUsuarioCloud) {
+          window.eliminarUsuarioCloud(idx);
+        }
       }
     }
   </script>

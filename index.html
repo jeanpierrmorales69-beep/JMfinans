@@ -181,18 +181,18 @@
                 <input type="number" id="simMonto" value="500000" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
               </div>
               <div>
-                <label class="block text-xs font-semibold text-zinc-400 mb-1">Interés Total (%)</label>
-                <input type="number" id="simInteres" value="20" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+                <label class="block text-xs font-semibold text-zinc-400 mb-1">Interés por Período (%)</label>
+                <input type="number" id="simInteres" value="10" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
               </div>
               <div>
                 <label class="block text-xs font-semibold text-zinc-400 mb-1">Tiempo / Duración</label>
-                <input type="number" id="simTiempoVal" value="30" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+                <input type="number" id="simTiempoVal" value="3" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
               </div>
               <div>
                 <label class="block text-xs font-semibold text-zinc-400 mb-1">Unidad de Tiempo</label>
                 <select id="simTiempoUnidad" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+                  <option value="Meses" selected>Meses</option>
                   <option value="Días">Días</option>
-                  <option value="Meses">Meses</option>
                 </select>
               </div>
             </div>
@@ -287,21 +287,21 @@
             <input type="number" id="cliMonto" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
           </div>
           <div>
-            <label class="block font-semibold text-zinc-400 mb-1">Interés Total (%) *</label>
-            <input type="number" id="cliInteres" value="20" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+            <label class="block font-semibold text-zinc-400 mb-1">Interés por Período (%) *</label>
+            <input type="number" id="cliInteres" value="10" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block font-semibold text-zinc-400 mb-1">Tiempo / Duración *</label>
-            <input type="number" id="cliTiempoVal" value="30" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+            <input type="number" id="cliTiempoVal" value="3" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
           </div>
           <div>
             <label class="block font-semibold text-zinc-400 mb-1">Unidad de Tiempo *</label>
             <select id="cliTiempoUnidad" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+              <option value="Meses" selected>Meses</option>
               <option value="Días">Días</option>
-              <option value="Meses">Meses</option>
             </select>
           </div>
         </div>
@@ -516,9 +516,9 @@
       document.getElementById('cliBarrio').value = '';
       document.getElementById('cliDireccion').value = '';
       document.getElementById('cliMonto').value = '';
-      document.getElementById('cliInteres').value = '20';
-      document.getElementById('cliTiempoVal').value = '30';
-      document.getElementById('cliTiempoUnidad').value = 'Días';
+      document.getElementById('cliInteres').value = '10';
+      document.getElementById('cliTiempoVal').value = '3';
+      document.getElementById('cliTiempoUnidad').value = 'Meses';
       document.getElementById('cliFechaCobro').value = '';
 
       document.getElementById('modalCliente').classList.remove('hidden');
@@ -540,12 +540,12 @@
       document.getElementById('cliBarrio').value = cli.barrio !== 'N/A' ? cli.barrio : '';
       document.getElementById('cliDireccion').value = cli.direccion !== 'N/A' ? cli.direccion : '';
       document.getElementById('cliMonto').value = cli.capital || '';
-      document.getElementById('cliInteres').value = cli.interes || 20;
+      document.getElementById('cliInteres').value = cli.interes || 10;
       
       if (cli.tiempo) {
         const partes = cli.tiempo.split(' ');
-        document.getElementById('cliTiempoVal').value = partes[0] || 30;
-        document.getElementById('cliTiempoUnidad').value = partes[1] || 'Días';
+        document.getElementById('cliTiempoVal').value = partes[0] || 3;
+        document.getElementById('cliTiempoUnidad').value = partes[1] || 'Meses';
       }
 
       document.getElementById('cliFechaCobro').value = cli.fechaCobro || '';
@@ -569,15 +569,16 @@
       const barrio = document.getElementById('cliBarrio').value.trim();
       const direccion = document.getElementById('cliDireccion').value.trim();
       const montoCapital = parseFloat(document.getElementById('cliMonto').value);
-      const interes = parseFloat(document.getElementById('cliInteres').value);
-      const tiempoVal = document.getElementById('cliTiempoVal').value;
+      const interesPorPeriodo = parseFloat(document.getElementById('cliInteres').value);
+      const tiempoVal = parseFloat(document.getElementById('cliTiempoVal').value);
       const tiempoUnidad = document.getElementById('cliTiempoUnidad').value;
       const fechaCobro = document.getElementById('cliFechaCobro').value;
 
-      const totalConInteres = montoCapital + (montoCapital * (interes / 100));
+      // Cálculo automático: si es Meses, multiplica el % por la cantidad de meses. Si es Días, toma el porcentaje fijo.
+      const factorInteres = tiempoUnidad === 'Meses' ? (interesPorPeriodo * tiempoVal) : interesPorPeriodo;
+      const totalConInteres = montoCapital + (montoCapital * (factorInteres / 100));
 
       if (editId) {
-        // Modo Edición
         const cli = window.clientes.find(c => c.id === editId);
         if (cli) {
           cli.nombre = nombre;
@@ -586,14 +587,13 @@
           cli.barrio = barrio || 'N/A';
           cli.direccion = direccion || 'N/A';
           cli.capital = montoCapital;
-          cli.interes = interes;
+          cli.interes = interesPorPeriodo;
           cli.montoTotal = totalConInteres;
           cli.saldoPendiente = totalConInteres - (cli.totalAbonado || 0);
           cli.tiempo = `${tiempoVal} ${tiempoUnidad}`;
           cli.fechaCobro = fechaCobro;
         }
       } else {
-        // Modo Nuevo
         const nuevo = {
           id: Date.now().toString(),
           nombre,
@@ -602,7 +602,7 @@
           barrio: barrio || 'N/A',
           direccion: direccion || 'N/A',
           capital: montoCapital,
-          interes: interes,
+          interes: interesPorPeriodo,
           montoTotal: totalConInteres,
           totalAbonado: 0,
           saldoPendiente: totalConInteres,
@@ -650,7 +650,7 @@
           </td>
           <td class="p-3 font-semibold text-zinc-200">
             <div>$ ${formatearDinero(cli.montoTotal)}</div>
-            <div class="text-[10px] text-zinc-400">Plazo: ${cli.tiempo || '30 Días'}</div>
+            <div class="text-[10px] text-zinc-400">Plazo: ${cli.tiempo || '3 Meses'}</div>
           </td>
           <td class="p-3 font-bold ${cli.saldoPendiente > 0 ? 'text-amber-400' : 'text-green-400'}">$ ${formatearDinero(cli.saldoPendiente)}</td>
           <td class="p-3 text-zinc-300">${cli.fechaCobro || 'N/A'}</td>
@@ -846,10 +846,13 @@
       const m = parseFloat(document.getElementById('simMonto').value);
       const i = parseFloat(document.getElementById('simInteres').value);
       const tVal = parseFloat(document.getElementById('simTiempoVal').value);
+      const tUnidad = document.getElementById('simTiempoUnidad').value;
 
       if (isNaN(m) || isNaN(i) || isNaN(tVal) || tVal <= 0) return;
 
-      const total = m + (m * (i / 100));
+      // Cálculo dinámico: si es meses, multiplica el % por la cantidad de meses.
+      const factorInteres = tUnidad === 'Meses' ? (i * tVal) : i;
+      const total = m + (m * (factorInteres / 100));
       const estimadoCuota = total / tVal;
 
       document.getElementById('resTotal').innerText = '$ ' + formatearDinero(total);

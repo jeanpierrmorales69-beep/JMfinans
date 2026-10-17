@@ -52,9 +52,18 @@
 </head>
 <body class="h-full bg-black text-gray-200 antialiased font-sans">
 
+  <!-- TOAST BIENVENIDA -->
+  <div id="welcomeToast" class="hidden fixed top-5 right-5 z-50 bg-zinc-800 border border-zinc-700 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-[-20px] opacity-0">
+    <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</div>
+    <div>
+      <h4 id="welcomeUserText" class="font-bold text-sm"></h4>
+      <p class="text-[11px] text-zinc-400">Sesión iniciada correctamente</p>
+    </div>
+  </div>
+
   <div id="app" class="min-h-screen flex flex-col">
 
-    <!-- LOGIN -->
+    <!-- PANTALLA LOGIN -->
     <div id="loginView" class="flex-1 flex items-center justify-center p-4">
       <div class="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl text-center">
         <div class="mb-6">
@@ -84,7 +93,7 @@
       </div>
     </div>
 
-    <!-- DASHBOARD -->
+    <!-- PANEL PRINCIPAL (DASHBOARD) -->
     <div id="dashboardView" class="hidden flex-1 flex flex-col">
       <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -121,7 +130,7 @@
           </button>
         </div>
 
-        <!-- CLIENTES -->
+        <!-- SECCIÓN CLIENTES -->
         <section id="secClientes" class="space-y-6">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
@@ -147,7 +156,7 @@
                   <tr>
                     <th class="p-3">Cliente</th>
                     <th class="p-3">Ubicación</th>
-                    <th class="p-3">Monto & Plazo (Días)</th>
+                    <th class="p-3">Monto & Plazo</th>
                     <th class="p-3">Saldo Pendiente</th>
                     <th class="p-3">Próximo Cobro</th>
                     <th class="p-3">Estado</th>
@@ -160,7 +169,7 @@
           </div>
         </section>
 
-        <!-- SIMULADOR -->
+        <!-- SECCIÓN SIMULADOR -->
         <section id="secSimulador" class="hidden space-y-6">
           <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 max-w-2xl mx-auto space-y-4 shadow-xl">
             <h2 class="text-lg font-bold text-white flex items-center gap-2">
@@ -176,8 +185,15 @@
                 <input type="number" id="simInteres" value="20" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
               </div>
               <div>
-                <label class="block text-xs font-semibold text-zinc-400 mb-1">Plazo en Días</label>
-                <input type="number" id="simDias" value="30" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+                <label class="block text-xs font-semibold text-zinc-400 mb-1">Tiempo / Duración</label>
+                <input type="number" id="simTiempoVal" value="30" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-zinc-400 mb-1">Unidad de Tiempo</label>
+                <select id="simTiempoUnidad" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+                  <option value="Días">Días</option>
+                  <option value="Meses">Meses</option>
+                </select>
               </div>
             </div>
             <button onclick="calcularSimulacion()" class="w-full py-2.5 bg-zinc-200 hover:bg-white text-black font-bold rounded-lg text-xs transition">
@@ -186,12 +202,12 @@
 
             <div id="simResultado" class="hidden pt-4 border-t border-zinc-800 space-y-2 text-xs">
               <div class="flex justify-between text-zinc-400"><span>Monto Total con Interés:</span> <strong id="resTotal" class="text-white"></strong></div>
-              <div class="flex justify-between text-zinc-400"><span>Estimado Diario:</span> <strong id="resValorCuota" class="text-green-400 text-sm"></strong></div>
+              <div class="flex justify-between text-zinc-400"><span>Estimado por periodo:</span> <strong id="resValorCuota" class="text-green-400 text-sm"></strong></div>
             </div>
           </div>
         </section>
 
-        <!-- CONFIGURACIÓN -->
+        <!-- SECCIÓN CONFIGURACIÓN (Solo Admin) -->
         <section id="secConfiguracion" class="hidden space-y-6 max-w-2xl mx-auto">
           <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4 shadow-xl">
             <h2 class="text-lg font-bold text-white flex items-center gap-2">
@@ -231,15 +247,16 @@
     </div>
   </div>
 
-  <!-- MODAL NUEVO CLIENTE -->
+  <!-- MODAL: CREAR / EDITAR CLIENTE -->
   <div id="modalCliente" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
       <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
-        <h3 class="font-bold text-white text-base">Registrar Nuevo Cliente</h3>
+        <h3 id="modalClienteTitulo" class="font-bold text-white text-base">Registrar Nuevo Cliente</h3>
         <button onclick="cerrarModalNuevoCliente()" class="text-zinc-500 hover:text-white">&times;</button>
       </div>
 
-      <form onsubmit="event.preventDefault(); guardarNuevoCliente();" class="space-y-3 text-xs">
+      <form onsubmit="event.preventDefault(); guardarClienteModal();" class="space-y-3 text-xs">
+        <input type="hidden" id="cliEditId">
         <div>
           <label class="block font-semibold text-zinc-400 mb-1">Nombre Completo *</label>
           <input type="text" id="cliNombre" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
@@ -275,9 +292,18 @@
           </div>
         </div>
 
-        <div>
-          <label class="block font-semibold text-zinc-400 mb-1">Plazo en Días *</label>
-          <input type="number" id="cliDias" value="30" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-semibold text-zinc-400 mb-1">Tiempo / Duración *</label>
+            <input type="number" id="cliTiempoVal" value="30" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-400 mb-1">Unidad de Tiempo *</label>
+            <select id="cliTiempoUnidad" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+              <option value="Días">Días</option>
+              <option value="Meses">Meses</option>
+            </select>
+          </div>
         </div>
 
         <div>
@@ -334,7 +360,7 @@
     </div>
   </div>
 
-  <!-- FIREBASE CONFIG & INTEGRACION DUAL -->
+  <!-- FIREBASE INTEGRATION -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -353,29 +379,23 @@
       const app = initializeApp(firebaseConfig);
       db = getDatabase(app);
 
-      // Sincronizar en tiempo real desde la Nube
       onValue(ref(db, 'clientes'), (snapshot) => {
         const data = snapshot.val();
-        if (data) {
-          window.clientes = Object.values(data);
-          localStorage.setItem('jm_clientes_local', JSON.stringify(window.clientes));
-          if (window.renderTablaClientes) window.renderTablaClientes();
-        }
+        window.clientes = data ? Object.values(data) : [];
+        localStorage.setItem('jm_clientes_local', JSON.stringify(window.clientes));
+        if (window.renderTablaClientes) window.renderTablaClientes();
       });
 
       onValue(ref(db, 'usuarios'), (snapshot) => {
         const data = snapshot.val();
-        if (data) {
-          window.usuarios = Object.values(data);
-          localStorage.setItem('jm_usuarios_local', JSON.stringify(window.usuarios));
-          if (window.renderListaUsuariosAdmin) window.renderListaUsuariosAdmin();
-        }
+        window.usuarios = data ? Object.values(data) : [
+          { user: 'Jean', pass: '1111482752', role: 'admin' }
+        ];
+        localStorage.setItem('jm_usuarios_local', JSON.stringify(window.usuarios));
+        if (window.renderListaUsuariosAdmin) window.renderListaUsuariosAdmin();
       });
-    } catch(e) {
-      console.log("Servicio de red local activo.");
-    }
+    } catch(e) {}
 
-    // Funciones de sincronización global
     window.guardarNubeYLocal = function() {
       localStorage.setItem('jm_clientes_local', JSON.stringify(window.clientes));
       localStorage.setItem('jm_usuarios_local', JSON.stringify(window.usuarios));
@@ -394,9 +414,8 @@
     };
   </script>
 
-  <!-- LOGICA DEL SISTEMA -->
+  <!-- LÓGICA PRINCIPAL -->
   <script>
-    // Variables globales cargadas de localStorage inicialmente
     window.clientes = JSON.parse(localStorage.getItem('jm_clientes_local')) || [];
     window.usuarios = JSON.parse(localStorage.getItem('jm_usuarios_local')) || [
       { user: 'Jean', pass: '1111482752', role: 'admin' }
@@ -411,6 +430,23 @@
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
     });
+
+    function mostrarToastBienvenida(nombre) {
+      const toast = document.getElementById('welcomeToast');
+      const text = document.getElementById('welcomeUserText');
+      text.innerText = `¡Bienvenido/a, ${nombre}!`;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-[-20px]', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+      }, 100);
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-[-20px]', 'opacity-0');
+        setTimeout(() => toast.classList.add('hidden'), 300);
+      }, 3500);
+    }
 
     function iniciarSesion() {
       const u = document.getElementById('loginUser').value.trim();
@@ -437,6 +473,7 @@
         renderTablaClientes();
         renderListaUsuariosAdmin();
         verificarAlertas();
+        mostrarToastBienvenida(encontrado.user);
       } else {
         err.classList.remove('hidden');
       }
@@ -471,13 +508,61 @@
     }
 
     function abrirModalNuevoCliente() {
+      document.getElementById('cliEditId').value = '';
+      document.getElementById('modalClienteTitulo').innerText = 'Registrar Nuevo Cliente';
+      document.getElementById('cliNombre').value = '';
+      document.getElementById('cliCedula').value = '';
+      document.getElementById('cliTelefono').value = '';
+      document.getElementById('cliBarrio').value = '';
+      document.getElementById('cliDireccion').value = '';
+      document.getElementById('cliMonto').value = '';
+      document.getElementById('cliInteres').value = '20';
+      document.getElementById('cliTiempoVal').value = '30';
+      document.getElementById('cliTiempoUnidad').value = 'Días';
+      document.getElementById('cliFechaCobro').value = '';
+
       document.getElementById('modalCliente').classList.remove('hidden');
     }
+
     function cerrarModalNuevoCliente() {
       document.getElementById('modalCliente').classList.add('hidden');
     }
 
-    function guardarNuevoCliente() {
+    function editarCliente(id) {
+      const cli = window.clientes.find(c => c.id === id);
+      if (!cli) return;
+
+      document.getElementById('cliEditId').value = cli.id;
+      document.getElementById('modalClienteTitulo').innerText = 'Editar Datos de Cliente';
+      document.getElementById('cliNombre').value = cli.nombre;
+      document.getElementById('cliCedula').value = cli.cedula;
+      document.getElementById('cliTelefono').value = cli.telefono;
+      document.getElementById('cliBarrio').value = cli.barrio !== 'N/A' ? cli.barrio : '';
+      document.getElementById('cliDireccion').value = cli.direccion !== 'N/A' ? cli.direccion : '';
+      document.getElementById('cliMonto').value = cli.capital || '';
+      document.getElementById('cliInteres').value = cli.interes || 20;
+      
+      if (cli.tiempo) {
+        const partes = cli.tiempo.split(' ');
+        document.getElementById('cliTiempoVal').value = partes[0] || 30;
+        document.getElementById('cliTiempoUnidad').value = partes[1] || 'Días';
+      }
+
+      document.getElementById('cliFechaCobro').value = cli.fechaCobro || '';
+      document.getElementById('modalCliente').classList.remove('hidden');
+    }
+
+    function eliminarCliente(id) {
+      if (confirm("¿Estás seguro de que deseas eliminar este cliente? Se borrará todo su historial.")) {
+        window.clientes = window.clientes.filter(c => c.id !== id);
+        if (window.guardarNubeYLocal) window.guardarNubeYLocal();
+        renderTablaClientes();
+        verificarAlertas();
+      }
+    }
+
+    function guardarClienteModal() {
+      const editId = document.getElementById('cliEditId').value;
       const nombre = document.getElementById('cliNombre').value.trim();
       const cedula = document.getElementById('cliCedula').value.trim();
       const telefono = document.getElementById('cliTelefono').value.trim();
@@ -485,42 +570,55 @@
       const direccion = document.getElementById('cliDireccion').value.trim();
       const montoCapital = parseFloat(document.getElementById('cliMonto').value);
       const interes = parseFloat(document.getElementById('cliInteres').value);
-      const diasVal = document.getElementById('cliDias').value;
+      const tiempoVal = document.getElementById('cliTiempoVal').value;
+      const tiempoUnidad = document.getElementById('cliTiempoUnidad').value;
       const fechaCobro = document.getElementById('cliFechaCobro').value;
 
       const totalConInteres = montoCapital + (montoCapital * (interes / 100));
 
-      const nuevo = {
-        id: Date.now().toString(),
-        nombre,
-        cedula,
-        telefono,
-        barrio: barrio || 'N/A',
-        direccion: direccion || 'N/A',
-        capital: montoCapital,
-        montoTotal: totalConInteres,
-        totalAbonado: 0,
-        saldoPendiente: totalConInteres,
-        dias: `${diasVal} Días`,
-        fechaCobro,
-        estado: 'ACTIVO',
-        historialPagos: []
-      };
+      if (editId) {
+        // Modo Edición
+        const cli = window.clientes.find(c => c.id === editId);
+        if (cli) {
+          cli.nombre = nombre;
+          cli.cedula = cedula;
+          cli.telefono = telefono;
+          cli.barrio = barrio || 'N/A';
+          cli.direccion = direccion || 'N/A';
+          cli.capital = montoCapital;
+          cli.interes = interes;
+          cli.montoTotal = totalConInteres;
+          cli.saldoPendiente = totalConInteres - (cli.totalAbonado || 0);
+          cli.tiempo = `${tiempoVal} ${tiempoUnidad}`;
+          cli.fechaCobro = fechaCobro;
+        }
+      } else {
+        // Modo Nuevo
+        const nuevo = {
+          id: Date.now().toString(),
+          nombre,
+          cedula,
+          telefono,
+          barrio: barrio || 'N/A',
+          direccion: direccion || 'N/A',
+          capital: montoCapital,
+          interes: interes,
+          montoTotal: totalConInteres,
+          totalAbonado: 0,
+          saldoPendiente: totalConInteres,
+          tiempo: `${tiempoVal} ${tiempoUnidad}`,
+          fechaCobro,
+          estado: 'ACTIVO',
+          historialPagos: []
+        };
+        window.clientes.push(nuevo);
+      }
 
-      window.clientes.push(nuevo);
       if (window.guardarNubeYLocal) window.guardarNubeYLocal();
 
       cerrarModalNuevoCliente();
       renderTablaClientes();
       verificarAlertas();
-
-      // Limpiar campos del modal
-      document.getElementById('cliNombre').value = '';
-      document.getElementById('cliCedula').value = '';
-      document.getElementById('cliTelefono').value = '';
-      document.getElementById('cliBarrio').value = '';
-      document.getElementById('cliDireccion').value = '';
-      document.getElementById('cliMonto').value = '';
     }
 
     function renderTablaClientes() {
@@ -532,6 +630,8 @@
         tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-zinc-500">No hay clientes registrados en el sistema.</td></tr>`;
         return;
       }
+
+      const esAdmin = usuarioActual && usuarioActual.role === 'admin';
 
       window.clientes.forEach(cli => {
         const tr = document.createElement('tr');
@@ -550,14 +650,14 @@
           </td>
           <td class="p-3 font-semibold text-zinc-200">
             <div>$ ${formatearDinero(cli.montoTotal)}</div>
-            <div class="text-[10px] text-zinc-400">Plazo: ${cli.dias || '30 Días'}</div>
+            <div class="text-[10px] text-zinc-400">Plazo: ${cli.tiempo || '30 Días'}</div>
           </td>
           <td class="p-3 font-bold ${cli.saldoPendiente > 0 ? 'text-amber-400' : 'text-green-400'}">$ ${formatearDinero(cli.saldoPendiente)}</td>
           <td class="p-3 text-zinc-300">${cli.fechaCobro || 'N/A'}</td>
           <td class="p-3">
             <span class="px-2 py-0.5 text-[10px] rounded-md font-bold border ${badgeColor}">${cli.estado}</span>
           </td>
-          <td class="p-3 text-right space-x-1">
+          <td class="p-3 text-right space-x-1 whitespace-nowrap">
             ${cli.saldoPendiente > 0 ? `
               <button onclick="abrirModalPago('${cli.id}')" class="px-2 py-1 bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-700/50 rounded-md font-semibold text-[11px]">
                 + Abono
@@ -569,6 +669,14 @@
             <button onclick="descargarReciboPDF('${cli.id}')" class="px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-md text-[11px]" title="Generar PDF">
               📄 PDF
             </button>
+            ${esAdmin ? `
+              <button onclick="editarCliente('${cli.id}')" class="px-2 py-1 bg-blue-950 hover:bg-blue-900 text-blue-300 border border-blue-800 rounded-md text-[11px]" title="Editar">
+                ✏️
+              </button>
+              <button onclick="eliminarCliente('${cli.id}')" class="px-2 py-1 bg-red-950 hover:bg-red-900 text-red-300 border border-red-800 rounded-md text-[11px]" title="Eliminar">
+                🗑️
+              </button>
+            ` : ''}
           </td>
         `;
         tbody.appendChild(tr);
@@ -737,15 +845,15 @@
     function calcularSimulacion() {
       const m = parseFloat(document.getElementById('simMonto').value);
       const i = parseFloat(document.getElementById('simInteres').value);
-      const dias = parseFloat(document.getElementById('simDias').value);
+      const tVal = parseFloat(document.getElementById('simTiempoVal').value);
 
-      if (isNaN(m) || isNaN(i) || isNaN(dias) || dias <= 0) return;
+      if (isNaN(m) || isNaN(i) || isNaN(tVal) || tVal <= 0) return;
 
       const total = m + (m * (i / 100));
-      const estimadoDiario = total / dias;
+      const estimadoCuota = total / tVal;
 
       document.getElementById('resTotal').innerText = '$ ' + formatearDinero(total);
-      document.getElementById('resValorCuota').innerText = '$ ' + formatearDinero(Math.round(estimadoDiario));
+      document.getElementById('resValorCuota').innerText = '$ ' + formatearDinero(Math.round(estimadoCuota));
       document.getElementById('simResultado').classList.remove('hidden');
     }
 

@@ -185,8 +185,8 @@
                 <input type="number" id="simInteres" value="10" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
               </div>
               <div>
-                <label class="block text-xs font-semibold text-zinc-400 mb-1">Tiempo / Duración</label>
-                <input type="number" id="simTiempoVal" value="3" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+                <label class="block text-xs font-semibold text-zinc-400 mb-1">Tiempo / Cuotas</label>
+                <input type="number" id="simTiempoVal" value="4" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
               </div>
               <div>
                 <label class="block text-xs font-semibold text-zinc-400 mb-1">Unidad de Tiempo</label>
@@ -202,7 +202,7 @@
 
             <div id="simResultado" class="hidden pt-4 border-t border-zinc-800 space-y-2 text-xs">
               <div class="flex justify-between text-zinc-400"><span>Monto Total con Interés:</span> <strong id="resTotal" class="text-white"></strong></div>
-              <div class="flex justify-between text-zinc-400"><span>Estimado por periodo:</span> <strong id="resValorCuota" class="text-green-400 text-sm"></strong></div>
+              <div class="flex justify-between text-zinc-400"><span>Estimado por Cuota:</span> <strong id="resValorCuota" class="text-green-400 text-sm"></strong></div>
             </div>
           </div>
         </section>
@@ -262,8 +262,8 @@
           <input type="text" id="cliNombre" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
         </div>
         <div>
-          <label class="block font-semibold text-zinc-400 mb-1">Cédula / Documento *</label>
-          <input type="text" id="cliCedula" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+          <label class="block font-semibold text-zinc-400 mb-1">Cédula / Documento (Opcional)</label>
+          <input type="text" id="cliCedula" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white" placeholder="Ej. 1111482752">
         </div>
         <div>
           <label class="block font-semibold text-zinc-400 mb-1">Teléfono / WhatsApp *</label>
@@ -294,8 +294,8 @@
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block font-semibold text-zinc-400 mb-1">Tiempo / Duración *</label>
-            <input type="number" id="cliTiempoVal" value="3" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+            <label class="block font-semibold text-zinc-400 mb-1">Tiempo / Cuotas *</label>
+            <input type="number" id="cliTiempoVal" value="4" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
           </div>
           <div>
             <label class="block font-semibold text-zinc-400 mb-1">Unidad de Tiempo *</label>
@@ -517,7 +517,7 @@
       document.getElementById('cliDireccion').value = '';
       document.getElementById('cliMonto').value = '';
       document.getElementById('cliInteres').value = '10';
-      document.getElementById('cliTiempoVal').value = '3';
+      document.getElementById('cliTiempoVal').value = '4';
       document.getElementById('cliTiempoUnidad').value = 'Meses';
       document.getElementById('cliFechaCobro').value = '';
 
@@ -535,7 +535,7 @@
       document.getElementById('cliEditId').value = cli.id;
       document.getElementById('modalClienteTitulo').innerText = 'Editar Datos de Cliente';
       document.getElementById('cliNombre').value = cli.nombre;
-      document.getElementById('cliCedula').value = cli.cedula;
+      document.getElementById('cliCedula').value = cli.cedula !== 'N/A' ? cli.cedula : '';
       document.getElementById('cliTelefono').value = cli.telefono;
       document.getElementById('cliBarrio').value = cli.barrio !== 'N/A' ? cli.barrio : '';
       document.getElementById('cliDireccion').value = cli.direccion !== 'N/A' ? cli.direccion : '';
@@ -544,7 +544,7 @@
       
       if (cli.tiempo) {
         const partes = cli.tiempo.split(' ');
-        document.getElementById('cliTiempoVal').value = partes[0] || 3;
+        document.getElementById('cliTiempoVal').value = partes[0] || 4;
         document.getElementById('cliTiempoUnidad').value = partes[1] || 'Meses';
       }
 
@@ -564,7 +564,8 @@
     function guardarClienteModal() {
       const editId = document.getElementById('cliEditId').value;
       const nombre = document.getElementById('cliNombre').value.trim();
-      const cedula = document.getElementById('cliCedula').value.trim();
+      const cedulaInput = document.getElementById('cliCedula').value.trim();
+      const cedula = cedulaInput !== '' ? cedulaInput : 'N/A';
       const telefono = document.getElementById('cliTelefono').value.trim();
       const barrio = document.getElementById('cliBarrio').value.trim();
       const direccion = document.getElementById('cliDireccion').value.trim();
@@ -574,7 +575,6 @@
       const tiempoUnidad = document.getElementById('cliTiempoUnidad').value;
       const fechaCobro = document.getElementById('cliFechaCobro').value;
 
-      // Cálculo automático: si es Meses, multiplica el % por la cantidad de meses. Si es Días, toma el porcentaje fijo.
       const factorInteres = tiempoUnidad === 'Meses' ? (interesPorPeriodo * tiempoVal) : interesPorPeriodo;
       const totalConInteres = montoCapital + (montoCapital * (factorInteres / 100));
 
@@ -642,7 +642,7 @@
         tr.innerHTML = `
           <td class="p-3">
             <div class="font-bold text-white">${cli.nombre}</div>
-            <div class="text-[10px] text-zinc-400">CC: ${cli.cedula} | Tel: ${cli.telefono}</div>
+            <div class="text-[10px] text-zinc-400">${cli.cedula !== 'N/A' ? 'CC: ' + cli.cedula + ' | ' : ''}Tel: ${cli.telefono}</div>
           </td>
           <td class="p-3 text-zinc-400">
             <div>${cli.barrio}</div>
@@ -650,7 +650,7 @@
           </td>
           <td class="p-3 font-semibold text-zinc-200">
             <div>$ ${formatearDinero(cli.montoTotal)}</div>
-            <div class="text-[10px] text-zinc-400">Plazo: ${cli.tiempo || '3 Meses'}</div>
+            <div class="text-[10px] text-zinc-400">Plazo: ${cli.tiempo || '4 Meses'}</div>
           </td>
           <td class="p-3 font-bold ${cli.saldoPendiente > 0 ? 'text-amber-400' : 'text-green-400'}">$ ${formatearDinero(cli.saldoPendiente)}</td>
           <td class="p-3 text-zinc-300">${cli.fechaCobro || 'N/A'}</td>
@@ -824,6 +824,7 @@
             <div class="details">
               <div class="row"><span>Ref:</span> <strong>${ref}</strong></div>
               <div class="row"><span>Cliente:</span> <strong>${cli.nombre}</strong></div>
+              ${cli.cedula !== 'N/A' ? `<div class="row"><span>Cédula:</span> <strong>${cli.cedula}</strong></div>` : ''}
               <div class="row"><span>Capital:</span> <strong>$ ${capital}</strong></div>
               <div class="row"><span>Total Crédito:</span> <strong>$ ${totalCredito}</strong></div>
               <div class="row"><span>Total Abonado:</span> <strong>$ ${totalAbonado}</strong></div>
@@ -850,7 +851,6 @@
 
       if (isNaN(m) || isNaN(i) || isNaN(tVal) || tVal <= 0) return;
 
-      // Cálculo dinámico: si es meses, multiplica el % por la cantidad de meses.
       const factorInteres = tUnidad === 'Meses' ? (i * tVal) : i;
       const total = m + (m * (factorInteres / 100));
       const estimadoCuota = total / tVal;

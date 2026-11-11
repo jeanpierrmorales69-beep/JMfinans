@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JM FINANS | Sistema Integral de Gestión & Créditos</title>
+  <title>JM FINANS | Soluciones Financieras & Créditos</title>
   
   <meta property="og:type" content="website" />
   <meta property="og:title" content="JM FINANS | Soluciones Financieras & Préstamos" />
-  <meta property="og:description" content="Plataforma de gestión de préstamos, simulador de cuotas y control de clientes de JM FINANS." />
+  <meta property="og:description" content="Solicita tu crédito de forma rápida y segura en JM FINANS." />
   <meta property="og:image" content="https://jeanpierrmorales69-beep.github.io/JMfinans/logo.png" />
   <meta property="og:url" content="https://jeanpierrmorales69-beep.github.io/JMfinans/" />
 
@@ -52,26 +52,133 @@
 </head>
 <body class="h-full bg-black text-gray-200 antialiased font-sans">
 
-  <!-- TOAST BIENVENIDA -->
+  <!-- TOAST NOTIFICACIÓN -->
   <div id="welcomeToast" class="hidden fixed top-5 right-5 z-50 bg-zinc-800 border border-zinc-700 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-[-20px] opacity-0">
-    <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</div>
+    <div id="toastIcon" class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</div>
     <div>
-      <h4 id="welcomeUserText" class="font-bold text-sm"></h4>
-      <p class="text-[11px] text-zinc-400">Sesión iniciada correctamente</p>
+      <h4 id="toastTitle" class="font-bold text-sm"></h4>
+      <p id="toastSub" class="text-[11px] text-zinc-400"></p>
     </div>
   </div>
 
   <div id="app" class="min-h-screen flex flex-col">
 
-    <!-- PANTALLA LOGIN -->
-    <div id="loginView" class="flex-1 flex items-center justify-center p-4">
+    <!-- ========================================== -->
+    <!-- VISTA PÚBLICA / BANCO (SOLICITAR CRÉDITO)  -->
+    <!-- ========================================== -->
+    <div id="publicView" class="flex-1 flex flex-col">
+      <!-- Navbar Público -->
+      <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-zinc-800 border border-zinc-700 rounded-lg flex items-center justify-center font-bold text-silver-300 overflow-hidden animated-logo">
+              <img src="logo.png" onerror="this.onerror=null; this.parentElement.innerText='JM'" class="w-full h-full object-cover">
+            </div>
+            <div>
+              <span class="font-extrabold text-white tracking-wide block leading-tight">JM FINANS</span>
+              <span class="text-[10px] text-zinc-400 uppercase tracking-widest font-semibold">Banca Digital</span>
+            </div>
+          </div>
+          <div>
+            <button onclick="cambiarAVistaLogin()" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-zinc-200 rounded-xl border border-zinc-700 flex items-center gap-2 transition">
+              <i data-lucide="lock" class="w-4 h-4"></i> Acceso Administrativo
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Contenido de Solicitud Pública -->
+      <main class="flex-1 max-w-2xl w-full mx-auto px-4 py-10 space-y-6">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl space-y-6">
+          <div class="text-center space-y-2">
+            <h1 class="text-2xl font-extrabold text-white">Solicita tu Préstamo Rápido</h1>
+            <p class="text-xs text-zinc-400">Completa el formulario y un asesor se comunicará contigo por WhatsApp tras la aprobación.</p>
+          </div>
+
+          <form id="formSolicitud" onsubmit="event.preventDefault(); enviarSolicitudCredito();" class="space-y-4 text-xs">
+            <div>
+              <label class="block font-semibold text-zinc-400 mb-1">Nombre Completo *</label>
+              <input type="text" id="solNombre" required class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-white" placeholder="Ej. Carlos Pérez">
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-semibold text-zinc-400 mb-1">Cédula / Documento (Opcional)</label>
+                <input type="text" id="solCedula" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-white" placeholder="Número de cédula">
+              </div>
+              <div>
+                <label class="block font-semibold text-zinc-400 mb-1">WhatsApp de Contacto *</label>
+                <input type="tel" id="solTelefono" required class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-white" placeholder="3001234567">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-semibold text-zinc-400 mb-1">Dirección de la Casa *</label>
+                <input type="text" id="solDireccion" required class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-white" placeholder="Calle 12 # 34-56">
+              </div>
+              <div>
+                <label class="block font-semibold text-zinc-400 mb-1">Barrio / Sector *</label>
+                <input type="text" id="solBarrio" required class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-white" placeholder="Nombre del barrio">
+              </div>
+            </div>
+
+            <div class="border-t border-zinc-800 pt-3 space-y-3">
+              <h3 class="font-bold text-zinc-300">Cargar Cédula (Ambas Caras en PNG/JPG)</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-semibold text-zinc-400 mb-1">Cédula Lado Anverso (Frente) *</label>
+                  <input type="file" id="solFotoFrente" accept="image/png, image/jpeg" required class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-xl text-[11px] text-zinc-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-zinc-800 file:text-white">
+                </div>
+                <div>
+                  <label class="block font-semibold text-zinc-400 mb-1">Cédula Lado Reverso (Dorso) *</label>
+                  <input type="file" id="solFotoDorso" accept="image/png, image/jpeg" required class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-xl text-[11px] text-zinc-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-zinc-800 file:text-white">
+                </div>
+              </div>
+            </div>
+
+            <div class="border-t border-zinc-800 pt-3 space-y-3">
+              <h3 class="font-bold text-zinc-300">Referencia Personal / Familiar</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="sm:col-span-2">
+                  <label class="block font-semibold text-zinc-400 mb-1">Nombre de la Referencia *</label>
+                  <input type="text" id="solRefNombre" required class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-white" placeholder="Familiar o conocido que conteste">
+                </div>
+                <div>
+                  <label class="block font-semibold text-zinc-400 mb-1">Teléfono Referencia *</label>
+                  <input type="tel" id="solRefTel" required class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-white" placeholder="3101234567">
+                </div>
+              </div>
+            </div>
+
+            <div class="border-t border-zinc-800 pt-3 space-y-3">
+              <h3 class="font-bold text-zinc-300">Monto del Préstamo Solicitado</h3>
+              <div>
+                <label class="block font-semibold text-zinc-400 mb-1">¿Cuánto dinero necesitas? ($) *</label>
+                <input type="number" id="solMonto" required class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-base font-bold" placeholder="500000">
+                <p class="text-[10px] text-zinc-500 mt-1">* Los intereses y plazos definitivos serán asignados por el administrador al aprobar tu solicitud.</p>
+              </div>
+            </div>
+
+            <button type="submit" class="w-full py-4 bg-white hover:bg-zinc-200 text-black font-extrabold rounded-xl transition shadow-xl mt-4">
+              Enviar Solicitud de Crédito
+            </button>
+          </form>
+        </div>
+      </main>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PANTALLA DE LOGIN ADMINISTRATIVO          -->
+    <!-- ========================================== -->
+    <div id="loginView" class="hidden flex-1 flex items-center justify-center p-4">
       <div class="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl text-center">
         <div class="mb-6">
           <div class="w-24 h-24 mx-auto mb-4 bg-zinc-800 border border-zinc-700 rounded-2xl flex items-center justify-center shadow-inner overflow-hidden animated-logo">
             <img src="logo.png" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-2xl font-bold text-silver-300\'>JM</span>'" alt="JM FINANS" class="w-full h-full object-cover">
           </div>
           <h1 class="text-2xl font-extrabold tracking-wider text-white">JM FINANS</h1>
-          <p class="text-xs text-zinc-400 mt-1">Gestión Privada de Préstamos</p>
+          <p class="text-xs text-zinc-400 mt-1">Panel Administrativo</p>
         </div>
 
         <form id="loginForm" class="space-y-4 text-left" onsubmit="event.preventDefault(); iniciarSesion();">
@@ -89,11 +196,18 @@
           <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-zinc-200 via-zinc-400 to-zinc-300 text-black font-bold rounded-xl hover:opacity-90 transition shadow-lg">
             Ingresar al Sistema
           </button>
+          <div class="text-center pt-2">
+            <button type="button" onclick="volverAVistaPublica()" class="text-xs text-zinc-400 hover:text-white underline">
+              ← Volver a la página de solicitudes
+            </button>
+          </div>
         </form>
       </div>
     </div>
 
-    <!-- PANEL PRINCIPAL (DASHBOARD) -->
+    <!-- ========================================== -->
+    <!-- PANEL PRINCIPAL ADMINISTRATIVO            -->
+    <!-- ========================================== -->
     <div id="dashboardView" class="hidden flex-1 flex flex-col">
       <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -118,33 +232,65 @@
       </header>
 
       <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        <!-- Navegación Admin -->
         <div class="flex border-b border-zinc-800 gap-2 overflow-x-auto pb-1">
-          <button id="tabClientes" onclick="verSeccion('clientes')" class="px-4 py-2 text-sm font-semibold border-b-2 border-white text-white flex items-center gap-2 whitespace-nowrap">
-            <i data-lucide="users" class="w-4 h-4"></i> Clientes & Cobros
+          <button id="tabSolicitudes" onclick="verSeccion('solicitudes')" class="px-4 py-2 text-sm font-semibold border-b-2 border-white text-white flex items-center gap-2 whitespace-nowrap">
+            <i data-lucide="file-text" class="w-4 h-4"></i> Solicitudes Web <span id="badgeSolicitudes" class="bg-amber-500 text-black text-[10px] px-1.5 py-0.2 rounded-full font-bold">0</span>
+          </button>
+          <button id="tabClientes" onclick="verSeccion('clientes')" class="px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap">
+            <i data-lucide="users" class="w-4 h-4"></i> Clientes Activos & Mora
           </button>
           <button id="tabSimulador" onclick="verSeccion('simulador')" class="px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap">
             <i data-lucide="calculator" class="w-4 h-4"></i> Simulador
           </button>
           <button id="tabConfig" onclick="verSeccion('configuracion')" class="hidden px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap">
-            <i data-lucide="shield" class="w-4 h-4"></i> Usuarios (Admin)
+            <i data-lucide="shield" class="w-4 h-4"></i> Usuarios & Personal
           </button>
         </div>
 
-        <!-- SECCIÓN CLIENTES -->
-        <section id="secClientes" class="space-y-6">
+        <!-- SECCIÓN 1: SOLICITUDES WEB (PENDIENTES) -->
+        <section id="secSolicitudes" class="space-y-6">
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 class="text-xl font-bold text-white">Solicitudes de Crédito Pendientes</h2>
+              <p class="text-xs text-zinc-400">Revisa la documentación y aprueba o rechaza solicitudes enviadas por la web</p>
+            </div>
+          </div>
+
+          <div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-xl">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-zinc-300">
+                <thead class="bg-zinc-950 text-zinc-400 uppercase tracking-wider font-semibold border-b border-zinc-800">
+                  <tr>
+                    <th class="p-3">Solicitante</th>
+                    <th class="p-3">Ubicación</th>
+                    <th class="p-3">Monto Pedido</th>
+                    <th class="p-3">Cédula (Fotos)</th>
+                    <th class="p-3">Referencia</th>
+                    <th class="p-3 text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaSolicitudesBody" class="divide-y divide-zinc-800/60"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECCIÓN 2: CLIENTES ACTIVOS & MORA -->
+        <section id="secClientes" class="hidden space-y-6">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h2 class="text-xl font-bold text-white">Listado de Clientes</h2>
-              <p class="text-xs text-zinc-400">Control dinámico de créditos con guardado seguro</p>
+              <h2 class="text-xl font-bold text-white">Listado de Clientes & Control de Mora</h2>
+              <p class="text-xs text-zinc-400">Control de créditos y alertas de cobro</p>
             </div>
             <button onclick="abrirModalNuevoCliente()" class="px-4 py-2.5 bg-white text-black font-semibold text-xs rounded-xl hover:bg-zinc-200 transition flex items-center gap-2 shadow-lg">
-              <i data-lucide="user-plus" class="w-4 h-4"></i> Nuevo Cliente
+              <i data-lucide="user-plus" class="w-4 h-4"></i> Registrar Manual
             </button>
           </div>
 
           <div id="alertasContainer" class="hidden p-4 bg-amber-950/30 border border-amber-800/50 rounded-xl text-amber-200 text-xs space-y-1">
             <div class="font-bold flex items-center gap-2 text-amber-400">
-              <i data-lucide="bell" class="w-4 h-4"></i> Alertas de Cobro Próximo / Vencido
+              <i data-lucide="bell" class="w-4 h-4"></i> Alertas de Cobro Próximo / En Mora
             </div>
             <ul id="alertasList" class="list-disc list-inside space-y-1"></ul>
           </div>
@@ -169,7 +315,7 @@
           </div>
         </section>
 
-        <!-- SECCIÓN SIMULADOR -->
+        <!-- SECCIÓN 3: SIMULADOR -->
         <section id="secSimulador" class="hidden space-y-6">
           <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 max-w-2xl mx-auto space-y-4 shadow-xl">
             <h2 class="text-lg font-bold text-white flex items-center gap-2">
@@ -207,7 +353,7 @@
           </div>
         </section>
 
-        <!-- SECCIÓN CONFIGURACIÓN (Solo Admin) -->
+        <!-- SECCIÓN 4: CONFIGURACIÓN -->
         <section id="secConfiguracion" class="hidden space-y-6 max-w-2xl mx-auto">
           <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4 shadow-xl">
             <h2 class="text-lg font-bold text-white flex items-center gap-2">
@@ -247,7 +393,80 @@
     </div>
   </div>
 
-  <!-- MODAL: CREAR / EDITAR CLIENTE -->
+  <!-- MODAL: APROBAR SOLICITUD WEB (ADMIN) -->
+  <div id="modalAprobar" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
+        <h3 class="font-bold text-white text-sm">Aprobar Crédito a Solicitante</h3>
+        <button onclick="cerrarModalAprobar()" class="text-zinc-500 hover:text-white">&times;</button>
+      </div>
+
+      <form onsubmit="event.preventDefault(); confirmarAprobacionSolicitud();" class="space-y-3 text-xs">
+        <input type="hidden" id="aprobarSolId">
+        <div>
+          <p class="text-zinc-400">Solicitante: <strong id="aprobarNombre" class="text-white"></strong></p>
+          <p class="text-zinc-400">Monto Solicitado: <strong id="aprobarMontoSolicitado" class="text-emerald-400"></strong></p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-semibold text-zinc-400 mb-1">Capital Aprobado ($) *</label>
+            <input type="number" id="aprobarCapital" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-400 mb-1">Interés por Período (%) *</label>
+            <input type="number" id="aprobarInteres" value="10" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-semibold text-zinc-400 mb-1">Tiempo / Cuotas *</label>
+            <input type="number" id="aprobarTiempoVal" value="4" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-400 mb-1">Unidad de Tiempo *</label>
+            <select id="aprobarTiempoUnidad" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+              <option value="Meses" selected>Meses</option>
+              <option value="Días">Días</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-zinc-400 mb-1">Fecha de Primer Cobro *</label>
+          <input type="date" id="aprobarFechaCobro" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+        </div>
+
+        <div class="pt-2 flex gap-2">
+          <button type="button" onclick="cerrarModalAprobar()" class="w-1/2 py-2.5 bg-zinc-800 text-zinc-300 rounded-lg">Cancelar</button>
+          <button type="submit" class="w-1/2 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg">Aprobar y Pasar a Activo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: VER FOTOS CÉDULA -->
+  <div id="modalFotos" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
+        <h3 class="font-bold text-white text-sm">Documento de Identidad</h3>
+        <button onclick="cerrarModalFotos()" class="text-zinc-500 hover:text-white">&times;</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+        <div>
+          <p class="font-semibold text-zinc-400 mb-1 text-center">Frente</p>
+          <img id="imgFrente" src="" alt="Frente Cédula" class="w-full h-40 object-contain bg-black rounded-lg border border-zinc-800">
+        </div>
+        <div>
+          <p class="font-semibold text-zinc-400 mb-1 text-center">Dorso</p>
+          <img id="imgDorso" src="" alt="Dorso Cédula" class="w-full h-40 object-contain bg-black rounded-lg border border-zinc-800">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NUEVO CLIENTE MANUAL / EDITAR -->
   <div id="modalCliente" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
       <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
@@ -386,6 +605,13 @@
         if (window.renderTablaClientes) window.renderTablaClientes();
       });
 
+      onValue(ref(db, 'solicitudes'), (snapshot) => {
+        const data = snapshot.val();
+        window.solicitudes = data ? Object.values(data) : [];
+        localStorage.setItem('jm_solicitudes_local', JSON.stringify(window.solicitudes));
+        if (window.renderTablaSolicitudes) window.renderTablaSolicitudes();
+      });
+
       onValue(ref(db, 'usuarios'), (snapshot) => {
         const data = snapshot.val();
         window.usuarios = data ? Object.values(data) : [
@@ -398,6 +624,7 @@
 
     window.guardarNubeYLocal = function() {
       localStorage.setItem('jm_clientes_local', JSON.stringify(window.clientes));
+      localStorage.setItem('jm_solicitudes_local', JSON.stringify(window.solicitudes));
       localStorage.setItem('jm_usuarios_local', JSON.stringify(window.usuarios));
 
       if (db) {
@@ -405,6 +632,10 @@
           const objCli = {};
           window.clientes.forEach(c => objCli[c.id] = c);
           set(ref(db, 'clientes'), objCli);
+
+          const objSol = {};
+          window.solicitudes.forEach(s => objSol[s.id] = s);
+          set(ref(db, 'solicitudes'), objSol);
 
           const objUsu = {};
           window.usuarios.forEach(u => objUsu[u.user.toLowerCase()] = u);
@@ -417,6 +648,7 @@
   <!-- LÓGICA PRINCIPAL -->
   <script>
     window.clientes = JSON.parse(localStorage.getItem('jm_clientes_local')) || [];
+    window.solicitudes = JSON.parse(localStorage.getItem('jm_solicitudes_local')) || [];
     window.usuarios = JSON.parse(localStorage.getItem('jm_usuarios_local')) || [
       { user: 'Jean', pass: '1111482752', role: 'admin' }
     ];
@@ -429,12 +661,13 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
+      renderTablaSolicitudes();
     });
 
-    function mostrarToastBienvenida(nombre) {
+    function mostrarToast(titulo, sub, tipo = 'success') {
       const toast = document.getElementById('welcomeToast');
-      const text = document.getElementById('welcomeUserText');
-      text.innerText = `¡Bienvenido/a, ${nombre}!`;
+      document.getElementById('toastTitle').innerText = titulo;
+      document.getElementById('toastSub').innerText = sub;
       toast.classList.remove('hidden');
       setTimeout(() => {
         toast.classList.remove('translate-y-[-20px]', 'opacity-0');
@@ -448,6 +681,75 @@
       }, 3500);
     }
 
+    // --- NAVEGACIÓN VISTAS ---
+    function cambiarAVistaLogin() {
+      document.getElementById('publicView').classList.add('hidden');
+      document.getElementById('loginView').classList.remove('hidden');
+      document.getElementById('dashboardView').classList.add('hidden');
+    }
+
+    function volverAVistaPublica() {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('dashboardView').classList.add('hidden');
+      document.getElementById('publicView').classList.remove('hidden');
+    }
+
+    // --- SOLICITUD PÚBLICA ---
+    function enviarSolicitudCredito() {
+      const nombre = document.getElementById('solNombre').value.trim();
+      const cedula = document.getElementById('solCedula').value.trim() || 'N/A';
+      const telefono = document.getElementById('solTelefono').value.trim();
+      const direccion = document.getElementById('solDireccion').value.trim();
+      const barrio = document.getElementById('solBarrio').value.trim();
+      const refNombre = document.getElementById('solRefNombre').value.trim();
+      const refTel = document.getElementById('solRefTel').value.trim();
+      const monto = parseFloat(document.getElementById('solMonto').value);
+
+      const fFrente = document.getElementById('solFotoFrente').files[0];
+      const fDorso = document.getElementById('solFotoDorso').files[0];
+
+      if (!fFrente || !fDorso) {
+        alert("Por favor carga ambas fotos de tu cédula en formato PNG o JPG.");
+        return;
+      }
+
+      // Convertir imágenes a Base64 para guardarlas en JSON/Firebase
+      const readerFrente = new FileReader();
+      const readerDorso = new FileReader();
+
+      readerFrente.onload = function(eFrente) {
+        const base64Frente = eFrente.target.result;
+        readerDorso.onload = function(eDorso) {
+          const base64Dorso = eDorso.target.result;
+
+          const nuevaSolicitud = {
+            id: Date.now().toString(),
+            nombre,
+            cedula,
+            telefono,
+            direccion,
+            barrio,
+            refNombre,
+            refTel,
+            montoSolicitado: monto,
+            fotoFrente: base64Frente,
+            fotoDorso: base64Dorso,
+            fecha: new Date().toLocaleDateString()
+          };
+
+          window.solicitudes.push(nuevaSolicitud);
+          if (window.guardarNubeYLocal) window.guardarNubeYLocal();
+
+          document.getElementById('formSolicitud').reset();
+          alert("¡Solicitud enviada con éxito! Nos comunicaremos contigo cuando sea aprobada.");
+          renderTablaSolicitudes();
+        };
+        readerDorso.readAsDataURL(fDorso);
+      };
+      readerFrente.readAsDataURL(fFrente);
+    }
+
+    // --- LOGIN ---
     function iniciarSesion() {
       const u = document.getElementById('loginUser').value.trim();
       const p = document.getElementById('loginPass').value.trim();
@@ -459,6 +761,7 @@
         usuarioActual = encontrado;
         err.classList.add('hidden');
         document.getElementById('loginView').classList.add('hidden');
+        document.getElementById('publicView').classList.add('hidden');
         document.getElementById('dashboardView').classList.remove('hidden');
         document.getElementById('userRoleBadge').innerText = encontrado.role === 'admin' ? 'Administrador' : 'Empleado';
         
@@ -470,10 +773,11 @@
           document.getElementById('tabConfig').classList.add('hidden');
         }
 
+        renderTablaSolicitudes();
         renderTablaClientes();
         renderListaUsuariosAdmin();
         verificarAlertas();
-        mostrarToastBienvenida(encontrado.user);
+        mostrarToast(`¡Bienvenido, ${encontrado.user}!`, "Sesión iniciada correctamente");
       } else {
         err.classList.remove('hidden');
       }
@@ -483,19 +787,24 @@
       usuarioActual = null;
       document.getElementById('loginForm').reset();
       document.getElementById('dashboardView').classList.add('hidden');
-      document.getElementById('loginView').classList.remove('hidden');
+      document.getElementById('publicView').classList.remove('hidden');
     }
 
     function verSeccion(sec) {
+      document.getElementById('secSolicitudes').classList.add('hidden');
       document.getElementById('secClientes').classList.add('hidden');
       document.getElementById('secSimulador').classList.add('hidden');
       document.getElementById('secConfiguracion').classList.add('hidden');
 
+      document.getElementById('tabSolicitudes').className = "px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap";
       document.getElementById('tabClientes').className = "px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap";
       document.getElementById('tabSimulador').className = "px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap";
       document.getElementById('tabConfig').className = "px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap";
 
-      if (sec === 'clientes') {
+      if (sec === 'solicitudes') {
+        document.getElementById('secSolicitudes').classList.remove('hidden');
+        document.getElementById('tabSolicitudes').className = "px-4 py-2 text-sm font-semibold border-b-2 border-white text-white flex items-center gap-2 whitespace-nowrap";
+      } else if (sec === 'clientes') {
         document.getElementById('secClientes').classList.remove('hidden');
         document.getElementById('tabClientes').className = "px-4 py-2 text-sm font-semibold border-b-2 border-white text-white flex items-center gap-2 whitespace-nowrap";
       } else if (sec === 'simulador') {
@@ -507,6 +816,143 @@
       }
     }
 
+    // --- TABLA SOLICITUDES (ADMIN) ---
+    function renderTablaSolicitudes() {
+      const tbody = document.getElementById('tablaSolicitudesBody');
+      const badge = document.getElementById('badgeSolicitudes');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const count = window.solicitudes ? window.solicitudes.length : 0;
+      if (badge) badge.innerText = count;
+
+      if (count === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-zinc-500">No hay solicitudes web pendientes.</td></tr>`;
+        return;
+      }
+
+      window.solicitudes.forEach(sol => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-3">
+            <div class="font-bold text-white">${sol.nombre}</div>
+            <div class="text-[10px] text-zinc-400">${sol.cedula !== 'N/A' ? 'CC: ' + sol.cedula + ' | ' : ''}Tel: ${sol.telefono}</div>
+          </td>
+          <td class="p-3 text-zinc-400">
+            <div>${sol.barrio}</div>
+            <div class="text-[10px] text-zinc-500">${sol.direccion}</div>
+          </td>
+          <td class="p-3 font-semibold text-emerald-400">$ ${formatearDinero(sol.montoSolicitado)}</td>
+          <td class="p-3">
+            <button onclick="verFotos('${sol.id}')" class="px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-md text-[11px]">
+              📷 Ver Cédula
+            </button>
+          </td>
+          <td class="p-3 text-zinc-300">
+            <div>${sol.refNombre}</div>
+            <div class="text-[10px] text-zinc-400">Tel: ${sol.refTel}</div>
+          </td>
+          <td class="p-3 text-right space-x-1 whitespace-nowrap">
+            <button onclick="abrirModalAprobar('${sol.id}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-md text-[11px]">
+              ✓ Aprobar
+            </button>
+            <button onclick="rechazarSolicitud('${sol.id}')" class="px-2.5 py-1 bg-red-950 hover:bg-red-900 text-red-300 border border-red-800 rounded-md text-[11px]">
+              ✕ Rechazar
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function verFotos(id) {
+      const sol = window.solicitudes.find(s => s.id === id);
+      if (!sol) return;
+      document.getElementById('imgFrente').src = sol.fotoFrente;
+      document.getElementById('imgDorso').src = sol.fotoDorso;
+      document.getElementById('modalFotos').classList.remove('hidden');
+    }
+    function cerrarModalFotos() {
+      document.getElementById('modalFotos').classList.add('hidden');
+    }
+
+    let solicitudEnProcesoId = null;
+    function abrirModalAprobar(id) {
+      const sol = window.solicitudes.find(s => s.id === id);
+      if (!sol) return;
+
+      solicitudEnProcesoId = sol.id;
+      document.getElementById('aprobarNombre').innerText = sol.nombre;
+      document.getElementById('aprobarMontoSolicitado').innerText = '$ ' + formatearDinero(sol.montoSolicitado);
+      document.getElementById('aprobarCapital').value = sol.montoSolicitado;
+      document.getElementById('aprobarInteres').value = 10;
+      document.getElementById('aprobarTiempoVal').value = 4;
+      document.getElementById('aprobarTiempoUnidad').value = 'Meses';
+      document.getElementById('aprobarFechaCobro').value = new Date().toISOString().split('T')[0];
+
+      document.getElementById('modalAprobar').classList.remove('hidden');
+    }
+    function cerrarModalAprobar() {
+      document.getElementById('modalAprobar').classList.add('hidden');
+      solicitudEnProcesoId = null;
+    }
+
+    function confirmarAprobacionSolicitud() {
+      const sol = window.solicitudes.find(s => s.id === solicitudEnProcesoId);
+      if (!sol) return;
+
+      const capital = parseFloat(document.getElementById('aprobarCapital').value);
+      const interesPorPeriodo = parseFloat(document.getElementById('aprobarInteres').value);
+      const tiempoVal = parseFloat(document.getElementById('aprobarTiempoVal').value);
+      const tiempoUnidad = document.getElementById('aprobarTiempoUnidad').value;
+      const fechaCobro = document.getElementById('aprobarFechaCobro').value;
+
+      const factorInteres = tiempoUnidad === 'Meses' ? (interesPorPeriodo * tiempoVal) : interesPorPeriodo;
+      const totalConInteres = capital + (capital * (factorInteres / 100));
+
+      const nuevoCliente = {
+        id: Date.now().toString(),
+        nombre: sol.nombre,
+        cedula: sol.cedula,
+        telefono: sol.telefono,
+        barrio: sol.barrio,
+        direccion: sol.direccion,
+        capital: capital,
+        interes: interesPorPeriodo,
+        montoTotal: totalConInteres,
+        totalAbonado: 0,
+        saldoPendiente: totalConInteres,
+        tiempo: `${tiempoVal} ${tiempoUnidad}`,
+        fechaCobro,
+        estado: 'ACTIVO',
+        historialPagos: []
+      };
+
+      window.clientes.push(nuevoCliente);
+      window.solicitudes = window.solicitudes.filter(s => s.id !== solicitudEnProcesoId);
+      if (window.guardarNubeYLocal) window.guardarNubeYLocal();
+
+      cerrarModalAprobar();
+      renderTablaSolicitudes();
+      renderTablaClientes();
+      verificarAlertas();
+
+      // Enlace WhatsApp directo para notificar al cliente aprobado
+      const telLimpio = sol.telefono.replace(/\D/g, '');
+      const msg = `*JM FINANS - ¡CRÉDITO APROBADO!*\n\nHola *${sol.nombre}*, nos complace informarte que tu solicitud de préstamo por *$ ${formatearDinero(capital)}* ha sido *APROBADA*.\n\nNos pondremos en contacto contigo para proceder con la entrega de los fondos.\n\n_JM FINANS - Financiación Confidencial_`;
+      const url = `https://wa.me/57${telLimpio}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    function rechazarSolicitud(id) {
+      if (confirm("¿Estás seguro de rechazar esta solicitud de crédito?")) {
+        window.solicitudes = window.solicitudes.filter(s => s.id !== id);
+        if (window.guardarNubeYLocal) window.guardarNubeYLocal();
+        renderTablaSolicitudes();
+      }
+    }
+
+    // --- CLIENTES ACTIVOS & MORA ---
     function abrirModalNuevoCliente() {
       document.getElementById('cliEditId').value = '';
       document.getElementById('modalClienteTitulo').innerText = 'Registrar Nuevo Cliente';
@@ -523,7 +969,6 @@
 
       document.getElementById('modalCliente').classList.remove('hidden');
     }
-
     function cerrarModalNuevoCliente() {
       document.getElementById('modalCliente').classList.add('hidden');
     }
@@ -553,7 +998,7 @@
     }
 
     function eliminarCliente(id) {
-      if (confirm("¿Estás seguro de que deseas eliminar este cliente? Se borrará todo su historial.")) {
+      if (confirm("¿Estás seguro de eliminar este cliente? Se borrará todo su historial.")) {
         window.clientes = window.clientes.filter(c => c.id !== id);
         if (window.guardarNubeYLocal) window.guardarNubeYLocal();
         renderTablaClientes();
@@ -615,7 +1060,6 @@
       }
 
       if (window.guardarNubeYLocal) window.guardarNubeYLocal();
-
       cerrarModalNuevoCliente();
       renderTablaClientes();
       verificarAlertas();
@@ -627,17 +1071,26 @@
       tbody.innerHTML = '';
 
       if (!window.clientes || window.clientes.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-zinc-500">No hay clientes registrados en el sistema.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-zinc-500">No hay clientes activos en el sistema.</td></tr>`;
         return;
       }
 
       const esAdmin = usuarioActual && usuarioActual.role === 'admin';
+      const hoy = new Date().toISOString().split('T')[0];
 
       window.clientes.forEach(cli => {
         const tr = document.createElement('tr');
-        const badgeColor = cli.estado === 'PAGADO' 
-          ? 'bg-green-950/60 text-green-400 border-green-800' 
-          : 'bg-amber-950/60 text-amber-400 border-amber-800';
+        
+        let enMora = cli.saldoPendiente > 0 && cli.fechaCobro && cli.fechaCobro < hoy;
+        let estadoBadge = cli.estado;
+        let badgeColor = 'bg-amber-950/60 text-amber-400 border-amber-800';
+
+        if (cli.estado === 'PAGADO') {
+          badgeColor = 'bg-green-950/60 text-green-400 border-green-800';
+        } else if (enMora) {
+          estadoBadge = 'EN MORA';
+          badgeColor = 'bg-red-950/60 text-red-400 border-red-800';
+        }
 
         tr.innerHTML = `
           <td class="p-3">
@@ -655,7 +1108,7 @@
           <td class="p-3 font-bold ${cli.saldoPendiente > 0 ? 'text-amber-400' : 'text-green-400'}">$ ${formatearDinero(cli.saldoPendiente)}</td>
           <td class="p-3 text-zinc-300">${cli.fechaCobro || 'N/A'}</td>
           <td class="p-3">
-            <span class="px-2 py-0.5 text-[10px] rounded-md font-bold border ${badgeColor}">${cli.estado}</span>
+            <span class="px-2 py-0.5 text-[10px] rounded-md font-bold border ${badgeColor}">${estadoBadge}</span>
           </td>
           <td class="p-3 text-right space-x-1 whitespace-nowrap">
             ${cli.saldoPendiente > 0 ? `
@@ -697,8 +1150,9 @@
           if (cli.saldoPendiente > 0 && cli.fechaCobro) {
             if (cli.fechaCobro <= hoy) {
               contadorAlertas++;
+              const enMora = cli.fechaCobro < hoy;
               const li = document.createElement('li');
-              li.innerHTML = `<strong>${cli.nombre}</strong> - Cobro programado para hoy o vencido (${cli.fechaCobro}). Saldo: $ ${formatearDinero(cli.saldoPendiente)}`;
+              li.innerHTML = `<strong>${cli.nombre}</strong> - ${enMora ? '<span class="text-red-400 font-bold">EN MORA</span>' : 'Cobro para hoy'} (Fecha: ${cli.fechaCobro}). Saldo: $ ${formatearDinero(cli.saldoPendiente)}`;
               lista.appendChild(li);
             }
           }
@@ -712,6 +1166,7 @@
       }
     }
 
+    // --- PAGOS Y RECIBOS ---
     function abrirModalPago(id) {
       const cli = window.clientes.find(c => c.id === id);
       if (!cli) return;
@@ -722,7 +1177,6 @@
       document.getElementById('pagoMonto').value = '';
       document.getElementById('modalPago').classList.remove('hidden');
     }
-
     function cerrarModalPago() {
       document.getElementById('modalPago').classList.add('hidden');
     }
@@ -843,6 +1297,7 @@
       ventanaPDF.document.close();
     }
 
+    // --- SIMULADOR ---
     function calcularSimulacion() {
       const m = parseFloat(document.getElementById('simMonto').value);
       const i = parseFloat(document.getElementById('simInteres').value);
@@ -860,6 +1315,7 @@
       document.getElementById('simResultado').classList.remove('hidden');
     }
 
+    // --- ADMINISTRACIÓN USUARIOS ---
     function crearNuevoUsuario() {
       const u = document.getElementById('nuevoUsuNombre').value.trim();
       const p = document.getElementById('nuevoUsuPass').value.trim();

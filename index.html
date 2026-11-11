@@ -67,7 +67,6 @@
     <!-- VISTA PÚBLICA / BANCO (SOLICITAR CRÉDITO)  -->
     <!-- ========================================== -->
     <div id="publicView" class="flex-1 flex flex-col">
-      <!-- Navbar Público -->
       <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div class="flex items-center gap-3">
@@ -87,14 +86,14 @@
         </div>
       </header>
 
-      <!-- Contenido de Solicitud Pública -->
       <main class="flex-1 max-w-2xl w-full mx-auto px-4 py-10 space-y-6">
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl space-y-6">
           <div class="text-center space-y-2">
             <h1 class="text-2xl font-extrabold text-white">Solicita tu Préstamo Rápido</h1>
-            <p class="text-xs text-zinc-400">Completa el formulario y un asesor se comunicará contigo por WhatsApp tras la aprobación.</p>
+            <p class="text-xs text-zinc-400">Completa el formulario, adjunta tu documento y verificación facial.</p>
           </div>
 
+          <!-- Formulario -->
           <form id="formSolicitud" onsubmit="event.preventDefault(); enviarSolicitudCredito();" class="space-y-4 text-xs">
             <div>
               <label class="block font-semibold text-zinc-400 mb-1">Nombre Completo *</label>
@@ -123,20 +122,26 @@
               </div>
             </div>
 
+            <!-- Verificación Facial y Cédula -->
             <div class="border-t border-zinc-800 pt-3 space-y-3">
-              <h3 class="font-bold text-zinc-300">Cargar Cédula (Ambas Caras en PNG/JPG)</h3>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <h3 class="font-bold text-zinc-300">Verificación de Identidad & Rostro</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label class="block font-semibold text-zinc-400 mb-1">Cédula Lado Anverso (Frente) *</label>
-                  <input type="file" id="solFotoFrente" accept="image/png, image/jpeg" required class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-xl text-[11px] text-zinc-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-zinc-800 file:text-white">
+                  <label class="block font-semibold text-zinc-400 mb-1">Foto Rostro (Selfie) *</label>
+                  <input type="file" id="solFotoRostro" accept="image/png, image/jpeg" required class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-xl text-[11px] text-zinc-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-zinc-800 file:text-white">
                 </div>
                 <div>
-                  <label class="block font-semibold text-zinc-400 mb-1">Cédula Lado Reverso (Dorso) *</label>
-                  <input type="file" id="solFotoDorso" accept="image/png, image/jpeg" required class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-xl text-[11px] text-zinc-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-zinc-800 file:text-white">
+                  <label class="block font-semibold text-zinc-400 mb-1">Cédula Frente *</label>
+                  <input type="file" id="solFotoFrente" accept="image/png, image/jpeg" required class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-xl text-[11px] text-zinc-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-zinc-800 file:text-white">
+                </div>
+                <div>
+                  <label class="block font-semibold text-zinc-400 mb-1">Cédula Dorso *</label>
+                  <input type="file" id="solFotoDorso" accept="image/png, image/jpeg" required class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-xl text-[11px] text-zinc-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-zinc-800 file:text-white">
                 </div>
               </div>
             </div>
 
+            <!-- Referencia -->
             <div class="border-t border-zinc-800 pt-3 space-y-3">
               <h3 class="font-bold text-zinc-300">Referencia Personal / Familiar</h3>
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -151,12 +156,14 @@
               </div>
             </div>
 
+            <!-- Monto con puntos dinámicos -->
             <div class="border-t border-zinc-800 pt-3 space-y-3">
               <h3 class="font-bold text-zinc-300">Monto del Préstamo Solicitado</h3>
               <div>
                 <label class="block font-semibold text-zinc-400 mb-1">¿Cuánto dinero necesitas? ($) *</label>
-                <input type="number" id="solMonto" required class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-base font-bold" placeholder="500000">
-                <p class="text-[10px] text-zinc-500 mt-1">* Los intereses y plazos definitivos serán asignados por el administrador al aprobar tu solicitud.</p>
+                <input type="text" id="solMontoInput" required oninput="formatearInputMonto(this)" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-base font-bold" placeholder="Ej. 1.000.000">
+                <input type="hidden" id="solMontoReal" value="0">
+                <p class="text-[10px] text-zinc-500 mt-1">💡 El monto se escribe automáticamente con puntos de separación (Ej: 1.000.000).</p>
               </div>
             </div>
 
@@ -164,6 +171,17 @@
               Enviar Solicitud de Crédito
             </button>
           </form>
+
+          <!-- Mensaje de Éxito Oculto por defecto -->
+          <div id="mensajeExitoSolicitud" class="hidden text-center py-10 space-y-4">
+            <div class="w-16 h-16 mx-auto bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-2xl font-bold border border-emerald-500/50">✓</div>
+            <h2 class="text-xl font-bold text-white">¡Gracias por confiar en JM FINANS!</h2>
+            <p class="text-xs text-zinc-400 max-w-sm mx-auto">Tu solicitud ha sido recibida con éxito, nos comunicaremos pronto contigo.</p>
+            <button onclick="reiniciarFormularioSolicitud()" class="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-white rounded-xl">
+              Realizar Otra Solicitud
+            </button>
+          </div>
+
         </div>
       </main>
     </div>
@@ -232,7 +250,6 @@
       </header>
 
       <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        <!-- Navegación Admin -->
         <div class="flex border-b border-zinc-800 gap-2 overflow-x-auto pb-1">
           <button id="tabSolicitudes" onclick="verSeccion('solicitudes')" class="px-4 py-2 text-sm font-semibold border-b-2 border-white text-white flex items-center gap-2 whitespace-nowrap">
             <i data-lucide="file-text" class="w-4 h-4"></i> Solicitudes Web <span id="badgeSolicitudes" class="bg-amber-500 text-black text-[10px] px-1.5 py-0.2 rounded-full font-bold">0</span>
@@ -253,7 +270,7 @@
           <div class="flex justify-between items-center">
             <div>
               <h2 class="text-xl font-bold text-white">Solicitudes de Crédito Pendientes</h2>
-              <p class="text-xs text-zinc-400">Revisa la documentación y aprueba o rechaza solicitudes enviadas por la web</p>
+              <p class="text-xs text-zinc-400">Revisa la verificación facial, documentos y aprueba con el porcentaje que desees (ej. 17%, 10%, 5%)</p>
             </div>
           </div>
 
@@ -265,7 +282,7 @@
                     <th class="p-3">Solicitante</th>
                     <th class="p-3">Ubicación</th>
                     <th class="p-3">Monto Pedido</th>
-                    <th class="p-3">Cédula (Fotos)</th>
+                    <th class="p-3">Verificación & Cédula</th>
                     <th class="p-3">Referencia</th>
                     <th class="p-3 text-right">Acciones</th>
                   </tr>
@@ -327,17 +344,18 @@
                 <input type="number" id="simMonto" value="500000" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
               </div>
               <div>
-                <label class="block text-xs font-semibold text-zinc-400 mb-1">Interés por Período (%)</label>
-                <input type="number" id="simInteres" value="10" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+                <label class="block text-xs font-semibold text-zinc-400 mb-1">Interés Quincenal (%)</label>
+                <input type="number" id="simInteres" value="17" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
               </div>
               <div>
-                <label class="block text-xs font-semibold text-zinc-400 mb-1">Tiempo / Cuotas</label>
-                <input type="number" id="simTiempoVal" value="4" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+                <label class="block text-xs font-semibold text-zinc-400 mb-1">Tiempo / Cuotas (Quincenas)</label>
+                <input type="number" id="simTiempoVal" value="2" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
               </div>
               <div>
                 <label class="block text-xs font-semibold text-zinc-400 mb-1">Unidad de Tiempo</label>
                 <select id="simTiempoUnidad" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
-                  <option value="Meses" selected>Meses</option>
+                  <option value="Quincenas" selected>Quincenas (15 Días)</option>
+                  <option value="Meses">Meses</option>
                   <option value="Días">Días</option>
                 </select>
               </div>
@@ -393,11 +411,11 @@
     </div>
   </div>
 
-  <!-- MODAL: APROBAR SOLICITUD WEB (ADMIN) -->
+  <!-- MODAL: APROBAR SOLICITUD WEB (ADMIN - MODIFICAR INTERÉS) -->
   <div id="modalAprobar" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
-        <h3 class="font-bold text-white text-sm">Aprobar Crédito a Solicitante</h3>
+        <h3 class="font-bold text-white text-sm">Aprobar Crédito y Definir Interés</h3>
         <button onclick="cerrarModalAprobar()" class="text-zinc-500 hover:text-white">&times;</button>
       </div>
 
@@ -414,20 +432,22 @@
             <input type="number" id="aprobarCapital" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
           </div>
           <div>
-            <label class="block font-semibold text-zinc-400 mb-1">Interés por Período (%) *</label>
-            <input type="number" id="aprobarInteres" value="10" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+            <label class="block font-semibold text-zinc-400 mb-1">Interés Quincenal (%) *</label>
+            <input type="number" id="aprobarInteres" value="17" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white" placeholder="Ej. 5, 10, 15, 17, 20">
+            <p class="text-[9px] text-zinc-500 mt-0.5">Modificable (Sugerido 17%)</p>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block font-semibold text-zinc-400 mb-1">Tiempo / Cuotas *</label>
-            <input type="number" id="aprobarTiempoVal" value="4" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+            <input type="number" id="aprobarTiempoVal" value="2" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
           </div>
           <div>
             <label class="block font-semibold text-zinc-400 mb-1">Unidad de Tiempo *</label>
             <select id="aprobarTiempoUnidad" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
-              <option value="Meses" selected>Meses</option>
+              <option value="Quincenas" selected>Quincenas (15 Días)</option>
+              <option value="Meses">Meses</option>
               <option value="Días">Días</option>
             </select>
           </div>
@@ -440,26 +460,30 @@
 
         <div class="pt-2 flex gap-2">
           <button type="button" onclick="cerrarModalAprobar()" class="w-1/2 py-2.5 bg-zinc-800 text-zinc-300 rounded-lg">Cancelar</button>
-          <button type="submit" class="w-1/2 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg">Aprobar y Pasar a Activo</button>
+          <button type="submit" class="w-1/2 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg">Aprobar y Enviar WhatsApp</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL: VER FOTOS CÉDULA -->
+  <!-- MODAL: VER VERIFICACIÓN FACIAL Y CÉDULA -->
   <div id="modalFotos" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
-        <h3 class="font-bold text-white text-sm">Documento de Identidad</h3>
+        <h3 class="font-bold text-white text-sm">Verificación Facial y Documentos</h3>
         <button onclick="cerrarModalFotos()" class="text-zinc-500 hover:text-white">&times;</button>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
         <div>
-          <p class="font-semibold text-zinc-400 mb-1 text-center">Frente</p>
+          <p class="font-semibold text-zinc-400 mb-1 text-center">Foto Rostro (Selfie)</p>
+          <img id="imgRostro" src="" alt="Rostro" class="w-full h-40 object-contain bg-black rounded-lg border border-zinc-800">
+        </div>
+        <div>
+          <p class="font-semibold text-zinc-400 mb-1 text-center">Cédula Frente</p>
           <img id="imgFrente" src="" alt="Frente Cédula" class="w-full h-40 object-contain bg-black rounded-lg border border-zinc-800">
         </div>
         <div>
-          <p class="font-semibold text-zinc-400 mb-1 text-center">Dorso</p>
+          <p class="font-semibold text-zinc-400 mb-1 text-center">Cédula Dorso</p>
           <img id="imgDorso" src="" alt="Dorso Cédula" class="w-full h-40 object-contain bg-black rounded-lg border border-zinc-800">
         </div>
       </div>
@@ -506,20 +530,21 @@
             <input type="number" id="cliMonto" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
           </div>
           <div>
-            <label class="block font-semibold text-zinc-400 mb-1">Interés por Período (%) *</label>
-            <input type="number" id="cliInteres" value="10" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+            <label class="block font-semibold text-zinc-400 mb-1">Interés Quincenal (%) *</label>
+            <input type="number" id="cliInteres" value="17" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block font-semibold text-zinc-400 mb-1">Tiempo / Cuotas *</label>
-            <input type="number" id="cliTiempoVal" value="4" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+            <input type="number" id="cliTiempoVal" value="2" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
           </div>
           <div>
             <label class="block font-semibold text-zinc-400 mb-1">Unidad de Tiempo *</label>
             <select id="cliTiempoUnidad" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
-              <option value="Meses" selected>Meses</option>
+              <option value="Quincenas" selected>Quincenas (15 Días)</option>
+              <option value="Meses">Meses</option>
               <option value="Días">Días</option>
             </select>
           </div>
@@ -659,12 +684,25 @@
       return valor.toLocaleString('es-CO');
     }
 
+    // Formateo dinámico con puntos en el input del monto
+    function formatearInputMonto(input) {
+      let valorLimpio = input.value.replace(/\D/g, '');
+      if (valorLimpio === '') {
+        input.value = '';
+        document.getElementById('solMontoReal').value = 0;
+        return;
+      }
+      let numero = parseInt(valorLimpio, 10);
+      document.getElementById('solMontoReal').value = numero;
+      input.value = numero.toLocaleString('es-CO');
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       renderTablaSolicitudes();
     });
 
-    function mostrarToast(titulo, sub, tipo = 'success') {
+    function mostrarToast(titulo, sub) {
       const toast = document.getElementById('welcomeToast');
       document.getElementById('toastTitle').innerText = titulo;
       document.getElementById('toastSub').innerText = sub;
@@ -694,6 +732,12 @@
       document.getElementById('publicView').classList.remove('hidden');
     }
 
+    function reiniciarFormularioSolicitud() {
+      document.getElementById('formSolicitud').reset();
+      document.getElementById('formSolicitud').classList.remove('hidden');
+      document.getElementById('mensajeExitoSolicitud').classList.add('hidden');
+    }
+
     // --- SOLICITUD PÚBLICA ---
     function enviarSolicitudCredito() {
       const nombre = document.getElementById('solNombre').value.trim();
@@ -703,50 +747,57 @@
       const barrio = document.getElementById('solBarrio').value.trim();
       const refNombre = document.getElementById('solRefNombre').value.trim();
       const refTel = document.getElementById('solRefTel').value.trim();
-      const monto = parseFloat(document.getElementById('solMonto').value);
+      const monto = parseFloat(document.getElementById('solMontoReal').value);
 
+      const fRostro = document.getElementById('solFotoRostro').files[0];
       const fFrente = document.getElementById('solFotoFrente').files[0];
       const fDorso = document.getElementById('solFotoDorso').files[0];
 
-      if (!fFrente || !fDorso) {
-        alert("Por favor carga ambas fotos de tu cédula en formato PNG o JPG.");
+      if (!fRostro || !fFrente || !fDorso) {
+        alert("Por favor carga tu foto de rostro (selfie) y ambas caras de la cédula.");
         return;
       }
 
-      // Convertir imágenes a Base64 para guardarlas en JSON/Firebase
+      const readerRostro = new FileReader();
       const readerFrente = new FileReader();
       const readerDorso = new FileReader();
 
-      readerFrente.onload = function(eFrente) {
-        const base64Frente = eFrente.target.result;
-        readerDorso.onload = function(eDorso) {
-          const base64Dorso = eDorso.target.result;
+      readerRostro.onload = function(eRostro) {
+        const base64Rostro = eRostro.target.result;
+        readerFrente.onload = function(eFrente) {
+          const base64Frente = eFrente.target.result;
+          readerDorso.onload = function(eDorso) {
+            const base64Dorso = eDorso.target.result;
 
-          const nuevaSolicitud = {
-            id: Date.now().toString(),
-            nombre,
-            cedula,
-            telefono,
-            direccion,
-            barrio,
-            refNombre,
-            refTel,
-            montoSolicitado: monto,
-            fotoFrente: base64Frente,
-            fotoDorso: base64Dorso,
-            fecha: new Date().toLocaleDateString()
+            const nuevaSolicitud = {
+              id: Date.now().toString(),
+              nombre,
+              cedula,
+              telefono,
+              direccion,
+              barrio,
+              refNombre,
+              refTel,
+              montoSolicitado: monto,
+              fotoRostro: base64Rostro,
+              fotoFrente: base64Frente,
+              fotoDorso: base64Dorso,
+              fecha: new Date().toLocaleDateString()
+            };
+
+            window.solicitudes.push(nuevaSolicitud);
+            if (window.guardarNubeYLocal) window.guardarNubeYLocal();
+
+            // Ocultar formulario y mostrar mensaje de agradecimiento
+            document.getElementById('formSolicitud').classList.add('hidden');
+            document.getElementById('mensajeExitoSolicitud').classList.remove('hidden');
+            renderTablaSolicitudes();
           };
-
-          window.solicitudes.push(nuevaSolicitud);
-          if (window.guardarNubeYLocal) window.guardarNubeYLocal();
-
-          document.getElementById('formSolicitud').reset();
-          alert("¡Solicitud enviada con éxito! Nos comunicaremos contigo cuando sea aprobada.");
-          renderTablaSolicitudes();
+          readerDorso.readAsDataURL(fDorso);
         };
-        readerDorso.readAsDataURL(fDorso);
+        readerFrente.readAsDataURL(fFrente);
       };
-      readerFrente.readAsDataURL(fFrente);
+      readerRostro.readAsDataURL(fRostro);
     }
 
     // --- LOGIN ---
@@ -845,7 +896,7 @@
           <td class="p-3 font-semibold text-emerald-400">$ ${formatearDinero(sol.montoSolicitado)}</td>
           <td class="p-3">
             <button onclick="verFotos('${sol.id}')" class="px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-md text-[11px]">
-              📷 Ver Cédula
+              👤 Ver Rostro & Cédula
             </button>
           </td>
           <td class="p-3 text-zinc-300">
@@ -868,8 +919,9 @@
     function verFotos(id) {
       const sol = window.solicitudes.find(s => s.id === id);
       if (!sol) return;
-      document.getElementById('imgFrente').src = sol.fotoFrente;
-      document.getElementById('imgDorso').src = sol.fotoDorso;
+      document.getElementById('imgRostro').src = sol.fotoRostro || '';
+      document.getElementById('imgFrente').src = sol.fotoFrente || '';
+      document.getElementById('imgDorso').src = sol.fotoDorso || '';
       document.getElementById('modalFotos').classList.remove('hidden');
     }
     function cerrarModalFotos() {
@@ -885,9 +937,9 @@
       document.getElementById('aprobarNombre').innerText = sol.nombre;
       document.getElementById('aprobarMontoSolicitado').innerText = '$ ' + formatearDinero(sol.montoSolicitado);
       document.getElementById('aprobarCapital').value = sol.montoSolicitado;
-      document.getElementById('aprobarInteres').value = 10;
-      document.getElementById('aprobarTiempoVal').value = 4;
-      document.getElementById('aprobarTiempoUnidad').value = 'Meses';
+      document.getElementById('aprobarInteres').value = 17; // Sugerido 17%, modificable libremente
+      document.getElementById('aprobarTiempoVal').value = 2;
+      document.getElementById('aprobarTiempoUnidad').value = 'Quincenas';
       document.getElementById('aprobarFechaCobro').value = new Date().toISOString().split('T')[0];
 
       document.getElementById('modalAprobar').classList.remove('hidden');
@@ -902,12 +954,12 @@
       if (!sol) return;
 
       const capital = parseFloat(document.getElementById('aprobarCapital').value);
-      const interesPorPeriodo = parseFloat(document.getElementById('aprobarInteres').value);
+      const interesPorQuincena = parseFloat(document.getElementById('aprobarInteres').value); // Modificable por el admin
       const tiempoVal = parseFloat(document.getElementById('aprobarTiempoVal').value);
       const tiempoUnidad = document.getElementById('aprobarTiempoUnidad').value;
       const fechaCobro = document.getElementById('aprobarFechaCobro').value;
 
-      const factorInteres = tiempoUnidad === 'Meses' ? (interesPorPeriodo * tiempoVal) : interesPorPeriodo;
+      const factorInteres = tiempoUnidad === 'Quincenas' ? (interesPorQuincena * tiempoVal) : (tiempoUnidad === 'Meses' ? (interesPorQuincena * 2 * tiempoVal) : interesPorQuincena);
       const totalConInteres = capital + (capital * (factorInteres / 100));
 
       const nuevoCliente = {
@@ -918,7 +970,7 @@
         barrio: sol.barrio,
         direccion: sol.direccion,
         capital: capital,
-        interes: interesPorPeriodo,
+        interes: interesPorQuincena,
         montoTotal: totalConInteres,
         totalAbonado: 0,
         saldoPendiente: totalConInteres,
@@ -936,19 +988,28 @@
       renderTablaSolicitudes();
       renderTablaClientes();
       verificarAlertas();
+      verSeccion('clientes'); // Salta automáticamente al panel de activos
 
-      // Enlace WhatsApp directo para notificar al cliente aprobado
+      // WhatsApp automático indicando el porcentaje con el que fue aprobado
       const telLimpio = sol.telefono.replace(/\D/g, '');
-      const msg = `*JM FINANS - ¡CRÉDITO APROBADO!*\n\nHola *${sol.nombre}*, nos complace informarte que tu solicitud de préstamo por *$ ${formatearDinero(capital)}* ha sido *APROBADA*.\n\nNos pondremos en contacto contigo para proceder con la entrega de los fondos.\n\n_JM FINANS - Financiación Confidencial_`;
+      const msg = `*JM FINANS - ¡CRÉDITO APROBADO!*\n\nHola *${sol.nombre}*, nos complace informarte que tu solicitud de préstamo por *$ ${formatearDinero(capital)}* ha sido *APROBADA*.\n\n*Condiciones Aplicadas:*\n• Tasa de Interés: ${interesPorQuincena}% Quincenal\n• Plazo: ${tiempoVal} ${tiempoUnidad}\n• Monto Total a Pagar: $ ${formatearDinero(totalConInteres)}\n\nNos pondremos en contacto contigo para proceder con la entrega.\n\n_JM FINANS - Financiación Confidencial_`;
       const url = `https://wa.me/57${telLimpio}?text=${encodeURIComponent(msg)}`;
       window.open(url, '_blank');
     }
 
     function rechazarSolicitud(id) {
-      if (confirm("¿Estás seguro de rechazar esta solicitud de crédito?")) {
+      const sol = window.solicitudes.find(s => s.id === id);
+      if (!sol) return;
+
+      if (confirm("¿Estás seguro de rechazar esta solicitud de crédito? Se le notificará por WhatsApp al cliente.")) {
         window.solicitudes = window.solicitudes.filter(s => s.id !== id);
         if (window.guardarNubeYLocal) window.guardarNubeYLocal();
         renderTablaSolicitudes();
+
+        const telLimpio = sol.telefono.replace(/\D/g, '');
+        const msg = `*JM FINANS - ESTADO DE SOLICITUD*\n\nHola *${sol.nombre}*, lamentamos informarte que tu solicitud de crédito no pudo ser aprobada en esta ocasión tras la revisión de los requisitos.\n\nAgradecemos tu interés en JM FINANS.\n\n_JM FINANS - Financiación Confidencial_`;
+        const url = `https://wa.me/57${telLimpio}?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
       }
     }
 
@@ -962,9 +1023,9 @@
       document.getElementById('cliBarrio').value = '';
       document.getElementById('cliDireccion').value = '';
       document.getElementById('cliMonto').value = '';
-      document.getElementById('cliInteres').value = '10';
-      document.getElementById('cliTiempoVal').value = '4';
-      document.getElementById('cliTiempoUnidad').value = 'Meses';
+      document.getElementById('cliInteres').value = '17';
+      document.getElementById('cliTiempoVal').value = '2';
+      document.getElementById('cliTiempoUnidad').value = 'Quincenas';
       document.getElementById('cliFechaCobro').value = '';
 
       document.getElementById('modalCliente').classList.remove('hidden');
@@ -985,12 +1046,12 @@
       document.getElementById('cliBarrio').value = cli.barrio !== 'N/A' ? cli.barrio : '';
       document.getElementById('cliDireccion').value = cli.direccion !== 'N/A' ? cli.direccion : '';
       document.getElementById('cliMonto').value = cli.capital || '';
-      document.getElementById('cliInteres').value = cli.interes || 10;
+      document.getElementById('cliInteres').value = cli.interes || 17;
       
       if (cli.tiempo) {
         const partes = cli.tiempo.split(' ');
-        document.getElementById('cliTiempoVal').value = partes[0] || 4;
-        document.getElementById('cliTiempoUnidad').value = partes[1] || 'Meses';
+        document.getElementById('cliTiempoVal').value = partes[0] || 2;
+        document.getElementById('cliTiempoUnidad').value = partes[1] || 'Quincenas';
       }
 
       document.getElementById('cliFechaCobro').value = cli.fechaCobro || '';
@@ -1015,12 +1076,12 @@
       const barrio = document.getElementById('cliBarrio').value.trim();
       const direccion = document.getElementById('cliDireccion').value.trim();
       const montoCapital = parseFloat(document.getElementById('cliMonto').value);
-      const interesPorPeriodo = parseFloat(document.getElementById('cliInteres').value);
+      const interesPorQuincena = parseFloat(document.getElementById('cliInteres').value);
       const tiempoVal = parseFloat(document.getElementById('cliTiempoVal').value);
       const tiempoUnidad = document.getElementById('cliTiempoUnidad').value;
       const fechaCobro = document.getElementById('cliFechaCobro').value;
 
-      const factorInteres = tiempoUnidad === 'Meses' ? (interesPorPeriodo * tiempoVal) : interesPorPeriodo;
+      const factorInteres = tiempoUnidad === 'Quincenas' ? (interesPorQuincena * tiempoVal) : (tiempoUnidad === 'Meses' ? (interesPorQuincena * 2 * tiempoVal) : interesPorQuincena);
       const totalConInteres = montoCapital + (montoCapital * (factorInteres / 100));
 
       if (editId) {
@@ -1032,7 +1093,7 @@
           cli.barrio = barrio || 'N/A';
           cli.direccion = direccion || 'N/A';
           cli.capital = montoCapital;
-          cli.interes = interesPorPeriodo;
+          cli.interes = interesPorQuincena;
           cli.montoTotal = totalConInteres;
           cli.saldoPendiente = totalConInteres - (cli.totalAbonado || 0);
           cli.tiempo = `${tiempoVal} ${tiempoUnidad}`;
@@ -1047,7 +1108,7 @@
           barrio: barrio || 'N/A',
           direccion: direccion || 'N/A',
           capital: montoCapital,
-          interes: interesPorPeriodo,
+          interes: interesPorQuincena,
           montoTotal: totalConInteres,
           totalAbonado: 0,
           saldoPendiente: totalConInteres,
@@ -1103,7 +1164,7 @@
           </td>
           <td class="p-3 font-semibold text-zinc-200">
             <div>$ ${formatearDinero(cli.montoTotal)}</div>
-            <div class="text-[10px] text-zinc-400">Plazo: ${cli.tiempo || '4 Meses'}</div>
+            <div class="text-[10px] text-zinc-400">Plazo: ${cli.tiempo || '2 Quincenas'} (${cli.interes || 17}%)</div>
           </td>
           <td class="p-3 font-bold ${cli.saldoPendiente > 0 ? 'text-amber-400' : 'text-green-400'}">$ ${formatearDinero(cli.saldoPendiente)}</td>
           <td class="p-3 text-zinc-300">${cli.fechaCobro || 'N/A'}</td>
@@ -1306,7 +1367,7 @@
 
       if (isNaN(m) || isNaN(i) || isNaN(tVal) || tVal <= 0) return;
 
-      const factorInteres = tUnidad === 'Meses' ? (i * tVal) : i;
+      const factorInteres = tUnidad === 'Quincenas' ? (i * tVal) : (tUnidad === 'Meses' ? (i * 2 * tVal) : i);
       const total = m + (m * (factorInteres / 100));
       const estimadoCuota = total / tVal;
 

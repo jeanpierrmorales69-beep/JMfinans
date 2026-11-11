@@ -663,7 +663,6 @@
       onValue(ref(db, 'clientes'), (snapshot) => {
         const data = snapshot.val();
         window.clientes = data ? Object.values(data) : [];
-        // Corrección automática de saldos negativos o corruptos
         window.clientes.forEach(c => {
           if (c.montoTotal === undefined) c.montoTotal = c.capital || 0;
           if (c.totalAbonado === undefined) c.totalAbonado = 0;
@@ -737,7 +736,6 @@
     ];
     let usuarioActual = null;
 
-    // Normalizar clientes locales si tienen saldo negativo
     window.clientes.forEach(c => {
       if (c.montoTotal === undefined) c.montoTotal = c.capital || 0;
       if (c.totalAbonado === undefined) c.totalAbonado = 0;
@@ -786,7 +784,6 @@
       }, 3500);
     }
 
-    // --- NAVEGACIÓN VISTAS ---
     function cambiarAVistaLogin() {
       document.getElementById('publicView').classList.add('hidden');
       document.getElementById('loginView').classList.remove('hidden');
@@ -806,7 +803,6 @@
       document.getElementById('mensajeExitoSolicitud').classList.add('hidden');
     }
 
-    // --- SOLICITUD PÚBLICA ---
     function enviarSolicitudCredito() {
       const nombre = document.getElementById('solNombre').value.trim();
       const cedula = document.getElementById('solCedula').value.trim() || 'N/A';
@@ -867,7 +863,6 @@
       readerRostro.readAsDataURL(fRostro);
     }
 
-    // --- LOGIN & DASHBOARD ---
     function iniciarSesion() {
       const u = document.getElementById('loginUser').value.trim();
       const p = document.getElementById('loginPass').value.trim();
@@ -882,7 +877,6 @@
         document.getElementById('publicView').classList.add('hidden');
         document.getElementById('dashboardView').classList.remove('hidden');
         
-        // Mensaje de bienvenida personalizado por usuario y rol
         let rolTexto = 'Administrador';
         if (encontrado.role === 'operador') rolTexto = 'Empleado / Operador';
         else if (encontrado.role === 'cartera') rolTexto = 'Gestor de Cartera';
@@ -890,19 +884,17 @@
         document.getElementById('headerBienvenida').innerText = `¡Bienvenido, ${encontrado.user}!`;
         document.getElementById('userRoleBadge').innerText = rolTexto;
         
-        // Control de permisos por rol
         if (encontrado.role === 'admin') {
           document.getElementById('configNavBtn').classList.remove('hidden');
           document.getElementById('tabConfig').classList.remove('hidden');
           document.getElementById('tabSolicitudes').classList.remove('hidden');
           document.getElementById('tabRechazadas').classList.remove('hidden');
         } else if (encontrado.role === 'cartera') {
-          // Cartera ve clientes y puede hacer abonos, pero sin configuración ni aprobación de solicitudes
           document.getElementById('configNavBtn').classList.add('hidden');
           document.getElementById('tabConfig').classList.add('hidden');
           document.getElementById('tabSolicitudes').classList.add('hidden');
           document.getElementById('tabRechazadas').classList.add('hidden');
-          verSeccion('clientes'); // Salta directo a clientes
+          verSeccion('clientes');
         } else {
           document.getElementById('configNavBtn').classList.add('hidden');
           document.getElementById('tabConfig').classList.add('hidden');
@@ -959,7 +951,6 @@
       }
     }
 
-    // --- TABLA SOLICITUDES (ADMIN) ---
     function renderTablaSolicitudes() {
       const tbody = document.getElementById('tablaSolicitudesBody');
       const badge = document.getElementById('badgeSolicitudes');
@@ -1114,7 +1105,7 @@
         interes: interesPorQuincena,
         montoTotal: totalConInteres,
         totalAbonado: 0,
-        saldoPendiente: totalConInteres, // Correctamente inicializado
+        saldoPendiente: totalConInteres,
         tiempo: `${tiempoVal} ${tiempoUnidad}`,
         fechaCobro,
         estado: 'ACTIVO',
@@ -1166,7 +1157,6 @@
       }
     }
 
-    // --- CLIENTES ACTIVOS & MORA ---
     function abrirModalNuevoCliente() {
       document.getElementById('cliEditId').value = '';
       document.getElementById('modalClienteTitulo').innerText = 'Registrar Nuevo Cliente';
@@ -1380,7 +1370,6 @@
       }
     }
 
-    // --- PAGOS Y RECIBOS ---
     function abrirModalPago(id) {
       const cli = window.clientes.find(c => c.id === id);
       if (!cli) return;
@@ -1511,7 +1500,6 @@
       ventanaPDF.document.close();
     }
 
-    // --- SIMULADOR ---
     function calcularSimulacion() {
       const m = parseFloat(document.getElementById('simMonto').value);
       const i = parseFloat(document.getElementById('simInteres').value);
@@ -1529,7 +1517,6 @@
       document.getElementById('simResultado').classList.remove('hidden');
     }
 
-    // --- ADMINISTRACIÓN USUARIOS ---
     function crearNuevoUsuario() {
       const u = document.getElementById('nuevoUsuNombre').value.trim();
       const p = document.getElementById('nuevoUsuPass').value.trim();

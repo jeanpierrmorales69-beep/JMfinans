@@ -172,7 +172,7 @@
             </button>
           </form>
 
-          <!-- Mensaje de Éxito Oculto por defecto -->
+          <!-- Mensaje de Éxito Visible Garantizado -->
           <div id="mensajeExitoSolicitud" class="hidden text-center py-10 space-y-4">
             <div class="w-16 h-16 mx-auto bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-2xl font-bold border border-emerald-500/50">✓</div>
             <h2 class="text-xl font-bold text-white">¡Gracias por confiar en JM FINANS!</h2>
@@ -254,6 +254,9 @@
           <button id="tabSolicitudes" onclick="verSeccion('solicitudes')" class="px-4 py-2 text-sm font-semibold border-b-2 border-white text-white flex items-center gap-2 whitespace-nowrap">
             <i data-lucide="file-text" class="w-4 h-4"></i> Solicitudes Web <span id="badgeSolicitudes" class="bg-amber-500 text-black text-[10px] px-1.5 py-0.2 rounded-full font-bold">0</span>
           </button>
+          <button id="tabRechazadas" onclick="verSeccion('rechazadas')" class="px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap">
+            <i data-lucide="x-circle" class="w-4 h-4"></i> Rechazadas <span id="badgeRechazadas" class="bg-zinc-800 text-zinc-300 text-[10px] px-1.5 py-0.2 rounded-full font-bold">0</span>
+          </button>
           <button id="tabClientes" onclick="verSeccion('clientes')" class="px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap">
             <i data-lucide="users" class="w-4 h-4"></i> Clientes Activos & Mora
           </button>
@@ -270,7 +273,7 @@
           <div class="flex justify-between items-center">
             <div>
               <h2 class="text-xl font-bold text-white">Solicitudes de Crédito Pendientes</h2>
-              <p class="text-xs text-zinc-400">Revisa la verificación facial, documentos y aprueba con el porcentaje que desees (ej. 17%, 10%, 5%)</p>
+              <p class="text-xs text-zinc-400">Revisa la verificación facial, documentos y aprueba con el porcentaje que desees</p>
             </div>
           </div>
 
@@ -288,6 +291,33 @@
                   </tr>
                 </thead>
                 <tbody id="tablaSolicitudesBody" class="divide-y divide-zinc-800/60"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECCIÓN 1.5: SOLICITUDES RECHAZADAS -->
+        <section id="secRechazadas" class="hidden space-y-6">
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 class="text-xl font-bold text-white">Historial de Solicitudes Rechazadas</h2>
+              <p class="text-xs text-zinc-400">Registro de solicitudes que no cumplieron con los requisitos</p>
+            </div>
+          </div>
+
+          <div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-xl">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-zinc-300">
+                <thead class="bg-zinc-950 text-zinc-400 uppercase tracking-wider font-semibold border-b border-zinc-800">
+                  <tr>
+                    <th class="p-3">Solicitante</th>
+                    <th class="p-3">Ubicación</th>
+                    <th class="p-3">Monto Solicitado</th>
+                    <th class="p-3">Fecha Rechazo</th>
+                    <th class="p-3 text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaRechazadasBody" class="divide-y divide-zinc-800/60"></tbody>
               </table>
             </div>
           </div>
@@ -411,11 +441,11 @@
     </div>
   </div>
 
-  <!-- MODAL: APROBAR SOLICITUD WEB (ADMIN - MODIFICAR INTERÉS) -->
+  <!-- MODAL: APROBAR SOLICITUD WEB (CÁLCULO EN TIEMPO REAL) -->
   <div id="modalAprobar" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
-        <h3 class="font-bold text-white text-sm">Aprobar Crédito y Definir Interés</h3>
+        <h3 class="font-bold text-white text-sm">Aprobar Crédito y Calcular Intereses</h3>
         <button onclick="cerrarModalAprobar()" class="text-zinc-500 hover:text-white">&times;</button>
       </div>
 
@@ -429,28 +459,33 @@
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block font-semibold text-zinc-400 mb-1">Capital Aprobado ($) *</label>
-            <input type="number" id="aprobarCapital" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+            <input type="number" id="aprobarCapital" required oninput="calcularTotalesModalAprobar()" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
           </div>
           <div>
             <label class="block font-semibold text-zinc-400 mb-1">Interés Quincenal (%) *</label>
-            <input type="number" id="aprobarInteres" value="17" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white" placeholder="Ej. 5, 10, 15, 17, 20">
-            <p class="text-[9px] text-zinc-500 mt-0.5">Modificable (Sugerido 17%)</p>
+            <input type="number" id="aprobarInteres" value="17" required oninput="calcularTotalesModalAprobar()" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block font-semibold text-zinc-400 mb-1">Tiempo / Cuotas *</label>
-            <input type="number" id="aprobarTiempoVal" value="2" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+            <input type="number" id="aprobarTiempoVal" value="2" required oninput="calcularTotalesModalAprobar()" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
           </div>
           <div>
             <label class="block font-semibold text-zinc-400 mb-1">Unidad de Tiempo *</label>
-            <select id="aprobarTiempoUnidad" required class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
+            <select id="aprobarTiempoUnidad" required onchange="calcularTotalesModalAprobar()" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
               <option value="Quincenas" selected>Quincenas (15 Días)</option>
               <option value="Meses">Meses</option>
               <option value="Días">Días</option>
             </select>
           </div>
+        </div>
+
+        <!-- Panel de Vista Previa de Cálculos -->
+        <div class="p-3 bg-zinc-950 border border-zinc-800 rounded-xl space-y-1 text-zinc-300">
+          <div class="flex justify-between"><span>Valor de Interés Total:</span> <strong id="modalCalcInteres" class="text-amber-400">$ 0</strong></div>
+          <div class="flex justify-between border-t border-zinc-800 pt-1"><span>Total a Pagar con Intereses:</span> <strong id="modalCalcTotal" class="text-emerald-400 text-sm">$ 0</strong></div>
         </div>
 
         <div>
@@ -637,6 +672,13 @@
         if (window.renderTablaSolicitudes) window.renderTablaSolicitudes();
       });
 
+      onValue(ref(db, 'rechazadas'), (snapshot) => {
+        const data = snapshot.val();
+        window.rechazadas = data ? Object.values(data) : [];
+        localStorage.setItem('jm_rechazadas_local', JSON.stringify(window.rechazadas));
+        if (window.renderTablaRechazadas) window.renderTablaRechazadas();
+      });
+
       onValue(ref(db, 'usuarios'), (snapshot) => {
         const data = snapshot.val();
         window.usuarios = data ? Object.values(data) : [
@@ -650,6 +692,7 @@
     window.guardarNubeYLocal = function() {
       localStorage.setItem('jm_clientes_local', JSON.stringify(window.clientes));
       localStorage.setItem('jm_solicitudes_local', JSON.stringify(window.solicitudes));
+      localStorage.setItem('jm_rechazadas_local', JSON.stringify(window.rechazadas));
       localStorage.setItem('jm_usuarios_local', JSON.stringify(window.usuarios));
 
       if (db) {
@@ -661,6 +704,10 @@
           const objSol = {};
           window.solicitudes.forEach(s => objSol[s.id] = s);
           set(ref(db, 'solicitudes'), objSol);
+
+          const objRech = {};
+          window.rechazadas.forEach(r => objRech[r.id] = r);
+          set(ref(db, 'rechazadas'), objRech);
 
           const objUsu = {};
           window.usuarios.forEach(u => objUsu[u.user.toLowerCase()] = u);
@@ -674,6 +721,7 @@
   <script>
     window.clientes = JSON.parse(localStorage.getItem('jm_clientes_local')) || [];
     window.solicitudes = JSON.parse(localStorage.getItem('jm_solicitudes_local')) || [];
+    window.rechazadas = JSON.parse(localStorage.getItem('jm_rechazadas_local')) || [];
     window.usuarios = JSON.parse(localStorage.getItem('jm_usuarios_local')) || [
       { user: 'Jean', pass: '1111482752', role: 'admin' }
     ];
@@ -684,7 +732,6 @@
       return valor.toLocaleString('es-CO');
     }
 
-    // Formateo dinámico con puntos en el input del monto
     function formatearInputMonto(input) {
       let valorLimpio = input.value.replace(/\D/g, '');
       if (valorLimpio === '') {
@@ -700,6 +747,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       renderTablaSolicitudes();
+      renderTablaRechazadas();
     });
 
     function mostrarToast(titulo, sub) {
@@ -788,7 +836,7 @@
             window.solicitudes.push(nuevaSolicitud);
             if (window.guardarNubeYLocal) window.guardarNubeYLocal();
 
-            // Ocultar formulario y mostrar mensaje de agradecimiento
+            // Mensaje de éxito visible de inmediato
             document.getElementById('formSolicitud').classList.add('hidden');
             document.getElementById('mensajeExitoSolicitud').classList.remove('hidden');
             renderTablaSolicitudes();
@@ -825,6 +873,7 @@
         }
 
         renderTablaSolicitudes();
+        renderTablaRechazadas();
         renderTablaClientes();
         renderListaUsuariosAdmin();
         verificarAlertas();
@@ -843,11 +892,13 @@
 
     function verSeccion(sec) {
       document.getElementById('secSolicitudes').classList.add('hidden');
+      document.getElementById('secRechazadas').classList.add('hidden');
       document.getElementById('secClientes').classList.add('hidden');
       document.getElementById('secSimulador').classList.add('hidden');
       document.getElementById('secConfiguracion').classList.add('hidden');
 
       document.getElementById('tabSolicitudes').className = "px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap";
+      document.getElementById('tabRechazadas').className = "px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap";
       document.getElementById('tabClientes').className = "px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap";
       document.getElementById('tabSimulador').className = "px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap";
       document.getElementById('tabConfig').className = "px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 whitespace-nowrap";
@@ -855,6 +906,9 @@
       if (sec === 'solicitudes') {
         document.getElementById('secSolicitudes').classList.remove('hidden');
         document.getElementById('tabSolicitudes').className = "px-4 py-2 text-sm font-semibold border-b-2 border-white text-white flex items-center gap-2 whitespace-nowrap";
+      } else if (sec === 'rechazadas') {
+        document.getElementById('secRechazadas').classList.remove('hidden');
+        document.getElementById('tabRechazadas').className = "px-4 py-2 text-sm font-semibold border-b-2 border-white text-white flex items-center gap-2 whitespace-nowrap";
       } else if (sec === 'clientes') {
         document.getElementById('secClientes').classList.remove('hidden');
         document.getElementById('tabClientes').className = "px-4 py-2 text-sm font-semibold border-b-2 border-white text-white flex items-center gap-2 whitespace-nowrap";
@@ -916,6 +970,40 @@
       });
     }
 
+    function renderTablaRechazadas() {
+      const tbody = document.getElementById('tablaRechazadasBody');
+      const badge = document.getElementById('badgeRechazadas');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const count = window.rechazadas ? window.rechazadas.length : 0;
+      if (badge) badge.innerText = count;
+
+      if (count === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-zinc-500">No hay solicitudes rechazadas.</td></tr>`;
+        return;
+      }
+
+      window.rechazadas.forEach(rech => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-3">
+            <div class="font-bold text-white">${rech.nombre}</div>
+            <div class="text-[10px] text-zinc-400">Tel: ${rech.telefono}</div>
+          </td>
+          <td class="p-3 text-zinc-400">${rech.barrio || 'N/A'}</td>
+          <td class="p-3 font-semibold text-red-400">$ ${formatearDinero(rech.montoSolicitado)}</td>
+          <td class="p-3 text-zinc-300">${rech.fechaRechazo || 'N/A'}</td>
+          <td class="p-3 text-right">
+            <button onclick="eliminarRechazada('${rech.id}')" class="px-2 py-1 bg-red-950 hover:bg-red-900 text-red-300 border border-red-800 rounded-md text-[11px]">
+              🗑️ Eliminar
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
     function verFotos(id) {
       const sol = window.solicitudes.find(s => s.id === id);
       if (!sol) return;
@@ -937,11 +1025,12 @@
       document.getElementById('aprobarNombre').innerText = sol.nombre;
       document.getElementById('aprobarMontoSolicitado').innerText = '$ ' + formatearDinero(sol.montoSolicitado);
       document.getElementById('aprobarCapital').value = sol.montoSolicitado;
-      document.getElementById('aprobarInteres').value = 17; // Sugerido 17%, modificable libremente
+      document.getElementById('aprobarInteres').value = 17;
       document.getElementById('aprobarTiempoVal').value = 2;
       document.getElementById('aprobarTiempoUnidad').value = 'Quincenas';
       document.getElementById('aprobarFechaCobro').value = new Date().toISOString().split('T')[0];
 
+      calcularTotalesModalAprobar();
       document.getElementById('modalAprobar').classList.remove('hidden');
     }
     function cerrarModalAprobar() {
@@ -949,12 +1038,27 @@
       solicitudEnProcesoId = null;
     }
 
+    // Cálculo dinámico en el modal de aprobación
+    function calcularTotalesModalAprobar() {
+      const capital = parseFloat(document.getElementById('aprobarCapital').value) || 0;
+      const interesPorQuincena = parseFloat(document.getElementById('aprobarInteres').value) || 0;
+      const tiempoVal = parseFloat(document.getElementById('aprobarTiempoVal').value) || 0;
+      const tiempoUnidad = document.getElementById('aprobarTiempoUnidad').value;
+
+      const factorInteres = tiempoUnidad === 'Quincenas' ? (interesPorQuincena * tiempoVal) : (tiempoUnidad === 'Meses' ? (interesPorQuincena * 2 * tiempoVal) : interesPorQuincena);
+      const valorInteresTotal = capital * (factorInteres / 100);
+      const totalConInteres = capital + valorInteresTotal;
+
+      document.getElementById('modalCalcInteres').innerText = '$ ' + formatearDinero(Math.round(valorInteresTotal));
+      document.getElementById('modalCalcTotal').innerText = '$ ' + formatearDinero(Math.round(totalConInteres));
+    }
+
     function confirmarAprobacionSolicitud() {
       const sol = window.solicitudes.find(s => s.id === solicitudEnProcesoId);
       if (!sol) return;
 
       const capital = parseFloat(document.getElementById('aprobarCapital').value);
-      const interesPorQuincena = parseFloat(document.getElementById('aprobarInteres').value); // Modificable por el admin
+      const interesPorQuincena = parseFloat(document.getElementById('aprobarInteres').value);
       const tiempoVal = parseFloat(document.getElementById('aprobarTiempoVal').value);
       const tiempoUnidad = document.getElementById('aprobarTiempoUnidad').value;
       const fechaCobro = document.getElementById('aprobarFechaCobro').value;
@@ -988,9 +1092,9 @@
       renderTablaSolicitudes();
       renderTablaClientes();
       verificarAlertas();
-      verSeccion('clientes'); // Salta automáticamente al panel de activos
+      verSeccion('clientes');
 
-      // WhatsApp automático indicando el porcentaje con el que fue aprobado
+      // WhatsApp de Aprobación Funcional
       const telLimpio = sol.telefono.replace(/\D/g, '');
       const msg = `*JM FINANS - ¡CRÉDITO APROBADO!*\n\nHola *${sol.nombre}*, nos complace informarte que tu solicitud de préstamo por *$ ${formatearDinero(capital)}* ha sido *APROBADA*.\n\n*Condiciones Aplicadas:*\n• Tasa de Interés: ${interesPorQuincena}% Quincenal\n• Plazo: ${tiempoVal} ${tiempoUnidad}\n• Monto Total a Pagar: $ ${formatearDinero(totalConInteres)}\n\nNos pondremos en contacto contigo para proceder con la entrega.\n\n_JM FINANS - Financiación Confidencial_`;
       const url = `https://wa.me/57${telLimpio}?text=${encodeURIComponent(msg)}`;
@@ -1001,15 +1105,31 @@
       const sol = window.solicitudes.find(s => s.id === id);
       if (!sol) return;
 
-      if (confirm("¿Estás seguro de rechazar esta solicitud de crédito? Se le notificará por WhatsApp al cliente.")) {
+      if (confirm("¿Estás seguro de rechazar esta solicitud de crédito? Se moverá al historial de rechazadas y se le notificará al cliente por WhatsApp.")) {
+        // Remover de pendientes
         window.solicitudes = window.solicitudes.filter(s => s.id !== id);
+        
+        // Agregar a rechazadas
+        sol.fechaRechazo = new Date().toLocaleDateString();
+        window.rechazadas.push(sol);
+
         if (window.guardarNubeYLocal) window.guardarNubeYLocal();
         renderTablaSolicitudes();
+        renderTablaRechazadas();
 
+        // WhatsApp de Rechazo Funcional
         const telLimpio = sol.telefono.replace(/\D/g, '');
         const msg = `*JM FINANS - ESTADO DE SOLICITUD*\n\nHola *${sol.nombre}*, lamentamos informarte que tu solicitud de crédito no pudo ser aprobada en esta ocasión tras la revisión de los requisitos.\n\nAgradecemos tu interés en JM FINANS.\n\n_JM FINANS - Financiación Confidencial_`;
         const url = `https://wa.me/57${telLimpio}?text=${encodeURIComponent(msg)}`;
         window.open(url, '_blank');
+      }
+    }
+
+    function eliminarRechazada(id) {
+      if (confirm("¿Deseas eliminar este registro de rechazadas?")) {
+        window.rechazadas = window.rechazadas.filter(r => r.id !== id);
+        if (window.guardarNubeYLocal) window.guardarNubeYLocal();
+        renderTablaRechazadas();
       }
     }
 

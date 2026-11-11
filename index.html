@@ -172,13 +172,14 @@
             </button>
           </form>
 
-          <!-- Mensaje de Éxito Visible Garantizado -->
-          <div id="mensajeExitoSolicitud" class="hidden text-center py-10 space-y-4">
+          <!-- Mensaje de Éxito Con Botón X para volver a llenar -->
+          <div id="mensajeExitoSolicitud" class="hidden text-center py-10 space-y-4 relative">
+            <button onclick="reiniciarFormularioSolicitud()" class="absolute top-0 right-0 w-8 h-8 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white rounded-full flex items-center justify-center font-bold text-sm transition" title="Volver a llenar información">✕</button>
             <div class="w-16 h-16 mx-auto bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-2xl font-bold border border-emerald-500/50">✓</div>
             <h2 class="text-xl font-bold text-white">¡Gracias por confiar en JM FINANS!</h2>
             <p class="text-xs text-zinc-400 max-w-sm mx-auto">Tu solicitud ha sido recibida con éxito, nos comunicaremos pronto contigo.</p>
-            <button onclick="reiniciarFormularioSolicitud()" class="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-white rounded-xl">
-              Realizar Otra Solicitud
+            <button onclick="reiniciarFormularioSolicitud()" class="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-white rounded-xl flex items-center gap-2 mx-auto">
+              <span>✕ Volver a llenar información</span>
             </button>
           </div>
 
@@ -782,6 +783,7 @@
 
     function reiniciarFormularioSolicitud() {
       document.getElementById('formSolicitud').reset();
+      document.getElementById('solMontoReal').value = 0;
       document.getElementById('formSolicitud').classList.remove('hidden');
       document.getElementById('mensajeExitoSolicitud').classList.add('hidden');
     }
@@ -836,7 +838,7 @@
             window.solicitudes.push(nuevaSolicitud);
             if (window.guardarNubeYLocal) window.guardarNubeYLocal();
 
-            // Mensaje de éxito visible de inmediato
+            // Ocultar formulario y mostrar mensaje de éxito y botón X
             document.getElementById('formSolicitud').classList.add('hidden');
             document.getElementById('mensajeExitoSolicitud').classList.remove('hidden');
             renderTablaSolicitudes();
@@ -1038,7 +1040,6 @@
       solicitudEnProcesoId = null;
     }
 
-    // Cálculo dinámico en el modal de aprobación
     function calcularTotalesModalAprobar() {
       const capital = parseFloat(document.getElementById('aprobarCapital').value) || 0;
       const interesPorQuincena = parseFloat(document.getElementById('aprobarInteres').value) || 0;
@@ -1094,7 +1095,6 @@
       verificarAlertas();
       verSeccion('clientes');
 
-      // WhatsApp de Aprobación Funcional
       const telLimpio = sol.telefono.replace(/\D/g, '');
       const msg = `*JM FINANS - ¡CRÉDITO APROBADO!*\n\nHola *${sol.nombre}*, nos complace informarte que tu solicitud de préstamo por *$ ${formatearDinero(capital)}* ha sido *APROBADA*.\n\n*Condiciones Aplicadas:*\n• Tasa de Interés: ${interesPorQuincena}% Quincenal\n• Plazo: ${tiempoVal} ${tiempoUnidad}\n• Monto Total a Pagar: $ ${formatearDinero(totalConInteres)}\n\nNos pondremos en contacto contigo para proceder con la entrega.\n\n_JM FINANS - Financiación Confidencial_`;
       const url = `https://wa.me/57${telLimpio}?text=${encodeURIComponent(msg)}`;
@@ -1106,10 +1106,8 @@
       if (!sol) return;
 
       if (confirm("¿Estás seguro de rechazar esta solicitud de crédito? Se moverá al historial de rechazadas y se le notificará al cliente por WhatsApp.")) {
-        // Remover de pendientes
         window.solicitudes = window.solicitudes.filter(s => s.id !== id);
         
-        // Agregar a rechazadas
         sol.fechaRechazo = new Date().toLocaleDateString();
         window.rechazadas.push(sol);
 
@@ -1117,7 +1115,6 @@
         renderTablaSolicitudes();
         renderTablaRechazadas();
 
-        // WhatsApp de Rechazo Funcional
         const telLimpio = sol.telefono.replace(/\D/g, '');
         const msg = `*JM FINANS - ESTADO DE SOLICITUD*\n\nHola *${sol.nombre}*, lamentamos informarte que tu solicitud de crédito no pudo ser aprobada en esta ocasión tras la revisión de los requisitos.\n\nAgradecemos tu interés en JM FINANS.\n\n_JM FINANS - Financiación Confidencial_`;
         const url = `https://wa.me/57${telLimpio}?text=${encodeURIComponent(msg)}`;

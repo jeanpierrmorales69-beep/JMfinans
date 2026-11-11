@@ -235,7 +235,7 @@
               <img src="logo.png" onerror="this.onerror=null; this.parentElement.innerText='JM'" class="w-full h-full object-cover">
             </div>
             <div>
-              <span class="font-extrabold text-white tracking-wide block leading-tight">JM FINANS</span>
+              <span id="headerBienvenida" class="font-extrabold text-white tracking-wide block leading-tight">JM FINANS</span>
               <span id="userRoleBadge" class="text-[10px] text-zinc-400 uppercase tracking-widest font-semibold"></span>
             </div>
           </div>
@@ -422,6 +422,7 @@
                   <label class="block text-xs font-semibold text-zinc-400 mb-1">Rol / Tipo</label>
                   <select id="nuevoUsuRol" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-white">
                     <option value="operador">Empleado / Operador</option>
+                    <option value="cartera">Cartera / Cobros</option>
                     <option value="admin">Administrador</option>
                   </select>
                 </div>
@@ -662,6 +663,14 @@
       onValue(ref(db, 'clientes'), (snapshot) => {
         const data = snapshot.val();
         window.clientes = data ? Object.values(data) : [];
+        // Corrección automática de saldos negativos o corruptos
+        window.clientes.forEach(c => {
+          if (c.montoTotal === undefined) c.montoTotal = c.capital || 0;
+          if (c.totalAbonado === undefined) c.totalAbonado = 0;
+          if (c.saldoPendiente === undefined || c.saldoPendiente < 0) {
+            c.saldoPendiente = Math.max(0, c.montoTotal - c.totalAbonado);
+          }
+        });
         localStorage.setItem('jm_clientes_local', JSON.stringify(window.clientes));
         if (window.renderTablaClientes) window.renderTablaClientes();
       });
@@ -727,6 +736,15 @@
       { user: 'Jean', pass: '1111482752', role: 'admin' }
     ];
     let usuarioActual = null;
+
+    // Normalizar clientes locales si tienen saldo negativo
+    window.clientes.forEach(c => {
+      if (c.montoTotal === undefined) c.montoTotal = c.capital || 0;
+      if (c.totalAbonado === undefined) c.totalAbonado = 0;
+      if (c.saldoPendiente === undefined || c.saldoPendiente < 0) {
+        c.saldoPendiente = Math.max(0, c.montoTotal - c.totalAbonado);
+      }
+    });
 
     function formatearDinero(valor) {
       if (isNaN(valor) || valor === null) return '0';
@@ -838,7 +856,6 @@
             window.solicitudes.push(nuevaSolicitud);
             if (window.guardarNubeYLocal) window.guardarNubeYLocal();
 
-            // Ocultar formulario y mostrar mensaje de éxito y botón X
             document.getElementById('formSolicitud').classList.add('hidden');
             document.getElementById('mensajeExitoSolicitud').classList.remove('hidden');
             renderTablaSolicitudes();
@@ -850,7 +867,7 @@
       readerRostro.readAsDataURL(fRostro);
     }
 
-    // --- LOGIN ---
+    // --- LOGIN & DASHBOARD ---
     function iniciarSesion() {
       const u = document.getElementById('loginUser').value.trim();
       const p = document.getElementById('loginPass').value.trim();
@@ -864,14 +881,33 @@
         document.getElementById('loginView').classList.add('hidden');
         document.getElementById('publicView').classList.add('hidden');
         document.getElementById('dashboardView').classList.remove('hidden');
-        document.getElementById('userRoleBadge').innerText = encontrado.role === 'admin' ? 'Administrador' : 'Empleado';
         
+        // Mensaje de bienvenida personalizado por usuario y rol
+        let rolTexto = 'Administrador';
+        if (encontrado.role === 'operador') rolTexto = 'Empleado / Operador';
+        else if (encontrado.role === 'cartera') rolTexto = 'Gestor de Cartera';
+
+        document.getElementById('headerBienvenida').innerText = `¡Bienvenido, ${encontrado.user}!`;
+        document.getElementById('userRoleBadge').innerText = rolTexto;
+        
+        // Control de permisos por rol
         if (encontrado.role === 'admin') {
           document.getElementById('configNavBtn').classList.remove('hidden');
           document.getElementById('tabConfig').classList.remove('hidden');
+          document.getElementById('tabSolicitudes').classList.remove('hidden');
+          document.getElementById('tabRechazadas').classList.remove('hidden');
+        } else if (encontrado.role === 'cartera') {
+          // Cartera ve clientes y puede hacer abonos, pero sin configuración ni aprobación de solicitudes
+          document.getElementById('configNavBtn').classList.add('hidden');
+          document.getElementById('tabConfig').classList.add('hidden');
+          document.getElementById('tabSolicitudes').classList.add('hidden');
+          document.getElementById('tabRechazadas').classList.add('hidden');
+          verSeccion('clientes'); // Salta directo a clientes
         } else {
           document.getElementById('configNavBtn').classList.add('hidden');
           document.getElementById('tabConfig').classList.add('hidden');
+          document.getElementById('tabSolicitudes').classList.remove('hidden');
+          document.getElementById('tabRechazadas').classList.remove('hidden');
         }
 
         renderTablaSolicitudes();
@@ -879,7 +915,7 @@
         renderTablaClientes();
         renderListaUsuariosAdmin();
         verificarAlertas();
-        mostrarToast(`¡Bienvenido, ${encontrado.user}!`, "Sesión iniciada correctamente");
+        mostrarToast(`¡Hola de nuevo, ${encontrado.user}!`, `Rol: ${rolTexto}`);
       } else {
         err.classList.remove('hidden');
       }
@@ -1078,7 +1114,7 @@
         interes: interesPorQuincena,
         montoTotal: totalConInteres,
         totalAbonado: 0,
-        saldoPendiente: totalConInteres,
+        saldoPendiente: totalConInteres, // Correctamente inicializado
         tiempo: `${tiempoVal} ${tiempoUnidad}`,
         fechaCobro,
         estado: 'ACTIVO',
@@ -1368,8 +1404,8 @@
       const cli = window.clientes.find(c => c.id === id);
       if (!cli || isNaN(monto)) return;
 
-      cli.saldoPendiente -= monto;
       cli.totalAbonado = (cli.totalAbonado || 0) + monto;
+      cli.saldoPendiente = Math.max(0, cli.montoTotal - cli.totalAbonado);
       if (nuevaFecha) cli.fechaCobro = nuevaFecha;
 
       cli.historialPagos.push({
@@ -1504,7 +1540,8 @@
       window.usuarios.push({ user: u, pass: p, role: r });
       if (window.guardarNubeYLocal) window.guardarNubeYLocal();
 
-      alert(`Acceso creado para ${u} como ${r === 'admin' ? 'Administrador' : 'Empleado'}.`);
+      let rolNombre = r === 'admin' ? 'Administrador' : (r === 'cartera' ? 'Cartera' : 'Empleado');
+      alert(`Acceso creado para ${u} como ${rolNombre}.`);
       document.getElementById('nuevoUsuNombre').value = '';
       document.getElementById('nuevoUsuPass').value = '';
       renderListaUsuariosAdmin();
@@ -1522,7 +1559,7 @@
           li.innerHTML = `
             <div>
               <span class="font-bold text-white">${u.user}</span> 
-              <span class="text-[10px] px-1.5 py-0.5 rounded ${u.role === 'admin' ? 'bg-zinc-800 text-white' : 'bg-zinc-900 text-zinc-400'}">${u.role.toUpperCase()}</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded ${u.role === 'admin' ? 'bg-zinc-800 text-white' : (u.role === 'cartera' ? 'bg-emerald-950 text-emerald-300' : 'bg-zinc-900 text-zinc-400')}">${u.role.toUpperCase()}</span>
               <div class="text-[10px] text-zinc-500">Contraseña: ••••••••</div>
             </div>
             ${u.user.toLowerCase() !== 'jean' ? `
